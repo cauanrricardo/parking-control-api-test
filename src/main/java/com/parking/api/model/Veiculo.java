@@ -1,7 +1,6 @@
 package com.parking.api.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -25,6 +24,6 @@ public class Veiculo {
    private Motorista motorista;
 
     @OneToMany
-    private List<Parking> tickets;
+    private List<Ticket> tickets;
 
 }
