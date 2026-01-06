@@ -1,5 +1,6 @@
 package com.parking.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
@@ -21,6 +22,7 @@ public class Motorista {
     private String rg;
 
     @OneToMany(mappedBy = "motorista")
+    @JsonIgnore
     private List<Veiculo> veiculos;
 
 
