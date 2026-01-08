@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class MotoristaServiceTest {
 
     @Mock //cria o duble do Banco
-    private MotoristaRepository repository;
+    private MotoristaRepository repository; //simula um repositorio
 
     @InjectMocks //injeta o duble no service
     private MotoristaService service;
@@ -30,7 +30,6 @@ public class MotoristaServiceTest {
 
         Motorista motoristaNovo = new Motorista();
         motoristaNovo.setRg(rgDuplicado);
-        motoristaNovo.setNomeCompleto("Cauan Mock Teste");
 
         Motorista motoristaAntigo = new Motorista();
         motoristaAntigo.setId(1L);

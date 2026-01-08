@@ -20,6 +20,9 @@ public class MotoristaService {
     }
 
     public Motorista salvar(Motorista motorista){
+        repository.findByRg(motorista.getRg()).ifPresent(motorista1 -> {
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "RG já cadastrado");
+        });
         return  repository.save(motorista);
     }
 
