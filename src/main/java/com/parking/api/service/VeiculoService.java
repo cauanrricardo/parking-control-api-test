@@ -25,8 +25,13 @@ public class VeiculoService {
     }
 
     public Veiculo salvar(Veiculo veiculo){
+        //validacao motorista existe
         if(veiculo.getMotorista() == null || veiculo.getMotorista().getId() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O veículo precisa de um motorista com ID valido");
+        }
+        //validacao da placa
+        if(veiculo.getPlaca() == null || veiculo.getPlaca().trim().length() != 7){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A placa deve conter 7 caracteres");
         }
         Motorista motoristaCompleto = motoristaRepository.findById(veiculo.getMotorista().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motorista não encontrado"));
