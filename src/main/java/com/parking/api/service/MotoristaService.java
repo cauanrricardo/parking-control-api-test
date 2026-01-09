@@ -20,6 +20,19 @@ public class MotoristaService {
     }
 
     public Motorista salvar(Motorista motorista){
+        //validacao nome
+        if (motorista.getNomeCompleto() == null || motorista.getNomeCompleto().isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome não pode estar vazio");
+        }
+        if( motorista.getNomeCompleto().trim().length() < 3){
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome deve ter no minimo 3 caracteres");
+        }
+
+        //validacao rg
+        String rgPadrao = "^\\d{2}\\.\\d{3}-\\d{3}$";
+        if (!motorista.getRg().matches(rgPadrao)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RG deve seguir o padrão 00.000-000");
+        }
         repository.findByRg(motorista.getRg()).ifPresent(motorista1 -> {
             throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "RG já cadastrado");
         });
