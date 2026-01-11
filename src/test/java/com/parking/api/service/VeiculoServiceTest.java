@@ -128,6 +128,29 @@ public class VeiculoServiceTest {
 
     }
 
+    @Test
+    void naoDeveSalvarVeiculoComPlacaDuplicada(){
+        //given
+        Motorista motorista = new Motorista();
+        motorista.setId(1L);
+        motorista.setNomeCompleto("Cauan Ricardo");
+
+        Veiculo veiculo = new Veiculo();
+        veiculo.setPlaca("ABC1234");
+        veiculo.setMotorista(motorista);
+
+        when(repository.existsByPlaca("ABC1234")).thenReturn(true); //"Quando alguém chamar repository.existsByPlaca("ABC1234"), retorne true"
+
+        //when / then
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            service.salvar(veiculo);
+        });
+
+        //validacao
+        assertEquals("Ja existe um veiculo cadastrado com esta placa!", exception.getReason());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    }
+
 
 
 }

@@ -35,7 +35,7 @@ public class VeiculoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Placa deve seguir o padrão AAA0000");
         }
         if(repository.existsByPlaca(veiculo.getPlaca())){
-            throw new RuntimeException("Já existe um veículo cadastrado com esta placa!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe um veiculo cadastrado com esta placa!");
         }
 
         Motorista motoristaCompleto = motoristaRepository.findById(veiculo.getMotorista().getId())
