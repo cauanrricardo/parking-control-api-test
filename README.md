@@ -13,7 +13,6 @@ Este projeto é uma API REST para gerenciamento de um estacionamento, desenvolvi
 - **Bean Validation** (Para garantir a integridade dos dados inseridos)
 
 ---
-
 ##  O que a API faz (Features)
 
 ✅ **Gestão de Motoristas:** Cadastro, listagem, atualização e exclusão (CRUD). Valida campos obrigatórios e RG único.  
