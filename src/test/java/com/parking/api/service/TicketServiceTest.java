@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -133,6 +134,19 @@ public class TicketServiceTest {
         //validacao
         //verifica se a data de saida é depois da de entrada
         assertTrue(ticketProcessado.getDataSaida().isAfter(ticket.getDataEntrada()));
+    }
+    @Test
+    void deveLancarExcecaoQuandoTicketNaoExisteNoCheckout(){
+        //given
+       Long idInexistente = 999L;
+
+       when(ticketRepository.findById(idInexistente))
+               .thenReturn(Optional.empty()); //ta vazio, pq ja vai lancar a exceção direto
+
+       //when e then
+        assertThrows(ResponseStatusException.class, () ->{
+            ticketService.checkout(idInexistente);
+        });
     }
 
 }
