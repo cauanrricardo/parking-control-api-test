@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,6 +148,24 @@ public class TicketServiceTest {
         assertThrows(ResponseStatusException.class, () ->{
             ticketService.checkout(idInexistente);
         });
+    }
+    @Test
+    void deveDefinirDataEntradaAutomaticamente(){
+        Ticket ticket = new Ticket();
+        ticket.setDataEntrada(null); //definir como  null
+
+        when(ticketRepository.save(any(Ticket.class)))
+                .thenAnswer( invocation -> invocation.getArgument(0));
+
+
+        Ticket salvo = ticketService.save(ticket);
+
+        assertNotNull(salvo.getDataEntrada(), "A data de entrada nnão pode ser nula.");
+    }
+    @Test
+    void deveManterDataEntradaQuandoJaDefinida(){
+
+
     }
 
 }

@@ -64,7 +64,6 @@ public class TicketService {
         //buscar o ticket no banco
         Ticket ticket = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket não encontrado"));
-
         //definir a hora de saida
         ticket.setDataSaida(LocalDateTime.now());
 
