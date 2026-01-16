@@ -1,7 +1,9 @@
 package com.parking.api.service;
 
 import com.parking.api.model.Ticket;
+import com.parking.api.model.Veiculo;
 import com.parking.api.repository.TicketRepository;
+import com.parking.api.repository.VeiculoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +17,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +24,10 @@ public class TicketServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+
+    @Mock
+    private VeiculoRepository veiculoRepository;
+
 
     @InjectMocks
     private TicketService ticketService;
@@ -158,15 +163,72 @@ public class TicketServiceTest {
                 .thenAnswer( invocation -> invocation.getArgument(0));
 
 
-        Ticket salvo = ticketService.save(ticket);
+        Ticket Ticketsalvo = ticketService.save(ticket);
 
-        assertNotNull(salvo.getDataEntrada(), "A data de entrada nnão pode ser nula.");
+        assertNotNull(Ticketsalvo.getDataEntrada(), "A data de entrada não pode ser nula.");
     }
     @Test
     void deveManterDataEntradaQuandoJaDefinida(){
+        LocalDateTime dataAntiga = LocalDateTime.of(2005,6, 21, 12, 0);
+
+        Ticket ticket = new Ticket();
+        ticket.setDataEntrada(dataAntiga);
+
+        when(ticketRepository.save(any(Ticket.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        Ticket ticketSalvo = ticketService.save(ticket);
+
+        assertEquals(dataAntiga, ticketSalvo.getDataEntrada(), "A data não deveria ter sido alterada");
 
 
     }
+    @Test
+    void deveBuscarVeiculoCompletoaoSalvar(){
+        //given
+        Ticket ticket = new Ticket();
+        ticket.setDataEntrada(LocalDateTime.now());
+
+        //o ticket chega so com o ID do veiculo
+        Veiculo veiculoComId = new Veiculo();
+        veiculoComId.setId(20L);
+        ticket.setVeiculo(veiculoComId);
+
+        //o veiculo completo que está no banco
+        Veiculo veiculoCompleto = new Veiculo();
+        veiculoCompleto.setId(20L);
+        veiculoCompleto.setPlaca("ABC1234");
+        veiculoCompleto.setCor("Rosa");
+
+        when(veiculoRepository.findById(20L))
+                .thenReturn(Optional.of(veiculoCompleto));
+
+        when(ticketRepository.save(any(Ticket.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        Ticket ticketSalvo = ticketService.save(ticket);
+
+        assertEquals("ABC1234", ticketSalvo.getVeiculo().getPlaca());
+        assertEquals("Rosa", ticketSalvo.getVeiculo().getCor());
+
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoVeiculoNaoExiste(){
+        Ticket ticket = new Ticket();
+        Veiculo veiculoIExistete = new Veiculo();
+        veiculoIExistete.setId(99L);
+        ticket.setVeiculo(veiculoIExistete);
+
+        when(veiculoRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                ticketService.save(ticket));
+
+        assertEquals("Veículo não encontrado", exception.getMessage());
+    }
+
 
 }
 

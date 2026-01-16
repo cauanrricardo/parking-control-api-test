@@ -1,6 +1,8 @@
 package com.parking.api.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
@@ -13,10 +15,14 @@ public class Veiculo {
     private long id;
 
     @Column(nullable = false, unique = true) //regras pro db, nao pode ir vazio e nem duplciado
+    @NotBlank(message = "A placa é obrigatória")
+    @Size(min = 7, max = 7, message = "A placa deve ter 7 caracteres")
     private String placa;
 
+    @NotBlank(message = "O modelo é obrigatório")
     private String modeloCarro;
 
+    @NotBlank(message = "Cor é obrigatória")
     private String cor;
 
     @ManyToOne
