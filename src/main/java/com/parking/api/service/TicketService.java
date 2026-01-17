@@ -46,7 +46,6 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
 
         ticketExistente.setValorPago(novoTicket.getValorPago());
-
         ticketExistente.setDataSaida(LocalDateTime.now());
 
         return  repository.save(ticketExistente);

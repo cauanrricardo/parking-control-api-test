@@ -15,8 +15,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.mockito.Mockito.verify;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -227,6 +230,55 @@ public class TicketServiceTest {
                 ticketService.save(ticket));
 
         assertEquals("Veículo não encontrado", exception.getMessage());
+    }
+    @Test
+    void deveAtualizarValorPagoEDataSaida(){
+        Long id = 1L;
+
+        Ticket ticketExistente = new Ticket();
+        ticketExistente.setId(id);
+        ticketExistente.setValorPago(BigDecimal.ZERO);
+        ticketExistente.setDataSaida(null);
+
+        //ticket dados novos
+        Ticket ticketDadosNovos = new Ticket();
+        ticketDadosNovos.setValorPago(BigDecimal.valueOf(50.0));
+
+        //mockito
+        //o service busca e encontra o ticket antigo
+        when(ticketRepository.findById(id))
+                .thenReturn(Optional.of(ticketExistente));
+
+        // o service vai salvar as alterações e o answer vai devolver o objeto
+        when(ticketRepository.save(any(Ticket.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        //when
+        Ticket resultado = ticketService.update(id, ticketDadosNovos);
+
+        //then
+        //vericar se o valor foi atualziado pra 50
+        // 0 = igual matematicamente
+        assertEquals(0, BigDecimal.valueOf(50.0).compareTo(resultado.getValorPago()));
+        assertNotNull(resultado.getDataSaida(), "A data de saida nao deveria ser preenchida no update");
+
+
+    }
+    @Test
+    void deveLancarExcecaoQuandoTicketNaoExisteNoUpdate() {
+        Long idInexistente = 100L;
+        Ticket dadosNovos = new Ticket();
+
+        when(ticketRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ticketService.update(idInexistente, dadosNovos);
+        });
+
+        assertEquals("Ticket não encontrado", exception.getMessage());
+
+
+        verify(ticketRepository, never()).save(any(Ticket.class));
     }
 
 
