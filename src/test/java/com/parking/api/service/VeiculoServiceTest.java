@@ -2,6 +2,7 @@ package com.parking.api.service;
 
 import com.parking.api.exception.MotoristaNotFoundException;
 import com.parking.api.exception.PlacaDuplicadaException;
+import com.parking.api.exception.VeiculoNotFoundException;
 import com.parking.api.model.Motorista;
 import com.parking.api.model.Veiculo;
 import com.parking.api.repository.MotoristaRepository;
@@ -199,7 +200,6 @@ public class VeiculoServiceTest {
         }
 
 
-
     }
 
     @Nested
@@ -211,6 +211,32 @@ public class VeiculoServiceTest {
     @Nested
     @DisplayName("Testes do Método Deletar")
     class Deletar {
+        @Test
+        void deveDeletarVeiculoComSucesso(){
+            Long id = 1L;
+
+            when(repository.existsById(id))
+                    .thenReturn(true);
+
+            service.deletar(id);
+
+            verify(repository, times(1)).deleteById(id);
+        }
+
+        @Test
+        void naoDeveDeletarVeiculoInexistente(){
+            Long idInexistnte = 999L;
+
+            when(repository.existsById(idInexistnte))
+                    .thenReturn(false);
+
+
+            assertThrows(VeiculoNotFoundException.class, () -> {
+                service.deletar(idInexistnte);
+            });
+
+            verify(repository, never()).deleteById(anyLong());
+        }
 
     }
 
