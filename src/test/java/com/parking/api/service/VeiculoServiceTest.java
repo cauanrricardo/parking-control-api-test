@@ -84,7 +84,6 @@ public class VeiculoServiceTest {
             Motorista motoristaFake = new Motorista();
             motoristaFake.setId(99L); // ID que não existe no banco
             veiculo.setMotorista(motoristaFake);
-            veiculo.setMotorista(motoristaFake);
 
             when(motoristaRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -205,6 +204,61 @@ public class VeiculoServiceTest {
     @Nested
     @DisplayName("Testes do Método Atualizar")
     class Atualizar {
+        @Test
+      void deveAtualizarVeiculoComSucesso() {
+            Long id = 1L;
+
+            Veiculo veiculo  = new Veiculo();
+            veiculo.setId(id);
+            veiculo.setPlaca("ABC1234");
+            veiculo.setCor("Rosa");
+            veiculo.setModeloCarro("Civic");
+
+            Veiculo veiculoAtualizado = new Veiculo();
+            veiculoAtualizado.setModeloCarro("Civic v8");
+            veiculoAtualizado.setPlaca("CAC1234");
+            veiculoAtualizado.setCor("Preto");
+
+            when(repository.findById(id))
+                    .thenReturn(Optional.of(veiculo));
+
+            //o save retorna o objeto atualizado
+            when(repository.save(any(Veiculo.class)))
+                    .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+            Veiculo resultado = service.update(id, veiculoAtualizado);
+
+            assertNotNull(resultado);
+            assertEquals("CAC1234", resultado.getPlaca());
+            assertEquals("Preto", resultado.getCor());
+            assertEquals("Civic v8", resultado.getModeloCarro());
+
+            //verifica se o id nao mudou
+            assertEquals(id, resultado.getId());
+
+            verify(repository, times(1)).findById(id);
+            verify(repository, times(1)).save(any(Veiculo.class));
+
+        }
+
+        @Test
+        void naoDeveAtualizarVeiculoInexistente(){
+            Long idInexistente = 999L;
+
+            Veiculo veiculoNovo = new Veiculo();
+            veiculoNovo.setPlaca("ABC1234");
+
+            when(repository.findById(idInexistente))
+                    .thenReturn(Optional.empty());
+
+         VeiculoNotFoundException exception =   assertThrows(VeiculoNotFoundException.class, () -> {
+                 service.update(idInexistente, veiculoNovo);
+            });
+
+            assertEquals("Veículo não encontrado com o ID: 999", exception.getMessage());
+            verify(repository, never()).save(any(Veiculo.class));
+            verify(repository, times(1)).findById(idInexistente);
+        }
 
     }
 
@@ -231,10 +285,11 @@ public class VeiculoServiceTest {
                     .thenReturn(false);
 
 
-            assertThrows(VeiculoNotFoundException.class, () -> {
+          VeiculoNotFoundException exception =   assertThrows(VeiculoNotFoundException.class, () -> {
                 service.deletar(idInexistnte);
             });
 
+            assertEquals("Veículo não encontrado com o ID: 999", exception.getMessage());
             verify(repository, never()).deleteById(anyLong());
         }
 
