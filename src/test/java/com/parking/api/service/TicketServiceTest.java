@@ -15,12 +15,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketServiceTest {
@@ -269,6 +266,7 @@ public class TicketServiceTest {
         Long idInexistente = 100L;
         Ticket dadosNovos = new Ticket();
 
+        //simular um ticket q nao existe
         when(ticketRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -277,8 +275,36 @@ public class TicketServiceTest {
 
         assertEquals("Ticket não encontrado", exception.getMessage());
 
-
+    //verificar que nao chamou o save
         verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    void deveDeletarTicketExistente(){
+        Long id = 1L;
+        Ticket ticket = new Ticket();
+        ticket.setId(id);
+
+        when(ticketRepository.existsById(id))
+                .thenReturn(true);
+
+        ticketService.deletar(id);
+
+        //verifica que o comando deletar foi chamado 1 vez.
+        verify(ticketRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoTicketNaoExisteNoDeletar() {
+        Long idInexistente = 99L;
+        when(ticketRepository.existsById(idInexistente)).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> {
+            ticketService.deletar(idInexistente);
+        });
+
+        //  garante que ele nem tentou deletar no banco
+        verify(ticketRepository, never()).deleteById(anyLong());
     }
 
 
