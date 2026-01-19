@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicketController {
 
-
     private final TicketService service;
 
     @GetMapping

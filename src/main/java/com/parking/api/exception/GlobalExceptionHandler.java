@@ -29,5 +29,39 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(MotoristaNotFoundException.class)
+    public ResponseEntity<ApiError> handleMotoristaNotFound(MotoristaNotFoundException ex) {
+        // reutiliza a lógica de 404
+        ApiError body = new ApiError(
+                Instant.now().toString(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(PlacaDuplicadaException.class)
+    public ResponseEntity<ApiError> handlePlacaDuplicada(PlacaDuplicadaException ex) {
+        ApiError body = new ApiError(
+                Instant.now().toString(),
+                HttpStatus.CONFLICT.value(), // 409
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException ex) {
+
+        ApiError body = new ApiError(
+                Instant.now().toString(),
+                HttpStatus.BAD_REQUEST.value(), // retorna erro 400
+                ex.getMessage() // A mensagem que você escreveu no Service (ex: "Placa inválida")
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+
     public record ApiError(String timestamp, int status, String message) {}
 }
