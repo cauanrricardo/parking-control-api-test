@@ -15,11 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class VeiculoServiceTest {
@@ -158,6 +159,58 @@ public class VeiculoServiceTest {
             assertEquals("Ja existe um veiculo cadastrado com esta placa: ABC1234", exception.getMessage());
 
         }
+
+    }
+    @Nested
+    @DisplayName("Testes do Método Listar")
+    class Listar {
+        @Test
+        void deveListarTodosOsVeiculos(){
+
+            Veiculo v1 = new Veiculo();
+            Veiculo v2 = new Veiculo();
+
+            List<Veiculo> listaVeiculos = List.of(v1, v2);
+
+            when(repository.findAll())
+                    .thenReturn(listaVeiculos);
+
+            List<Veiculo> resultado = service.listarVeiculos(); // o resultado vai receber a listaveiculos retornada do listarVeiuclos();
+
+            assertNotNull(resultado);
+            assertEquals(2, resultado.size());
+            verify(repository, times(1)).findAll();
+        }
+
+        @Test
+        void deveRetornarListaVaziaQuandoNaoHaVeiculos(){
+            List<Veiculo> listaVeiculos = List.of();
+
+            when(repository.findAll())
+                    .thenReturn(listaVeiculos);
+
+            List<Veiculo> resultado = service.listarVeiculos();
+
+            assertNotNull(resultado);
+            assertTrue(resultado.isEmpty(), " A lista deve estar vazia");
+            assertEquals(0, resultado.size());
+
+
+        }
+
+
+
+    }
+
+    @Nested
+    @DisplayName("Testes do Método Atualizar")
+    class Atualizar {
+
+    }
+
+    @Nested
+    @DisplayName("Testes do Método Deletar")
+    class Deletar {
 
     }
 
