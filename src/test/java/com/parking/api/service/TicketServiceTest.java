@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -305,6 +306,40 @@ public class TicketServiceTest {
 
         //  garante que ele nem tentou deletar no banco
         verify(ticketRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void deveRetornarListaDeTickets(){
+        Ticket ticket1 = new Ticket();
+        Ticket ticket2 = new Ticket();
+        List<Ticket> listaSimulada = List.of(ticket1, ticket2);
+
+        when(ticketRepository.findAll())
+                .thenReturn(listaSimulada);
+
+        List<Ticket> resultado = ticketService.listarTickets();
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        //verifica se o service foi no banco buscar
+        verify(ticketRepository, times(1)).findAll();
+
+
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoHaTickets(){
+        List<Ticket> listaSimulada = List.of();
+
+        when(ticketRepository.findAll())
+                .thenReturn(listaSimulada);
+
+        List<Ticket> resultado = ticketService.listarTickets();
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty(), "A lista deveria estar vazia");
+        verify(ticketRepository, times(1)).findAll();
+
     }
 
 
