@@ -1,11 +1,14 @@
 package com.parking.api.service;
 
+import com.parking.api.exception.TicketNotFoundException;
 import com.parking.api.model.Ticket;
 import com.parking.api.model.Veiculo;
 import com.parking.api.repository.TicketRepository;
 import com.parking.api.repository.VeiculoRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Nested;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,319 +32,355 @@ public class TicketServiceTest {
     @Mock
     private VeiculoRepository veiculoRepository;
 
-
     @InjectMocks
     private TicketService ticketService;
 
-    @Test
-    void deveCobrar10ReaisParaTempoAte30Minutos(){
-        //given
-        Ticket ticket = new Ticket();
-        ticket.setId(1L);
+    // ====== TESTES  CHECKOUT     ========
+    @Nested
+    @DisplayName("Testes do Método Checkout")
+    class Checkout{
 
-        //simualr que um carro entrou há 20 minutos
-        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(20));
+        @Test
+        void deveCobrar10ReaisParaTempoAte30Minutos(){
+            //given
+            Ticket ticket = new Ticket();
+            ticket.setId(1L);
 
-        //mockito
-        when(ticketRepository.findById(1L))
-                .thenReturn(Optional.of(ticket));
+            //simualr que um carro entrou há 20 minutos
+            ticket.setDataEntrada(LocalDateTime.now().minusMinutes(20));
 
-        //quando salvar retorna o propio obejto modificado pra gente conferir o valor
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            //mockito
+            when(ticketRepository.findById(1L))
+                    .thenReturn(Optional.of(ticket));
 
-        //when
-        Ticket ticketeSaida = ticketService.checkout(1L);
+            //quando salvar retorna o propio obejto modificado pra gente conferir o valor
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
 
-        //then
-        assertEquals(BigDecimal.valueOf(10.0), ticketeSaida.getValorPago());
-    }
+            //when
+            Ticket ticketeSaida = ticketService.checkout(1L);
 
-    @Test
-    void deveCobrar15ReaisParaTempoAte60Minuto(){
+            //then
+            assertEquals(BigDecimal.valueOf(10.0), ticketeSaida.getValorPago());
+        }
 
-        //given
-        Ticket ticket = new Ticket();
-        ticket.setId(1L);
+        @Test
+        void deveCobrar15ReaisParaTempoAte60Minuto(){
 
-        //simular o carro
-        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(50));
+            //given
+            Ticket ticket = new Ticket();
+            ticket.setId(1L);
 
-        //mockito
-        when(ticketRepository.findById(1L))
-                .thenReturn(Optional.of(ticket));
+            //simular o carro
+            ticket.setDataEntrada(LocalDateTime.now().minusMinutes(50));
 
-        //quando salvar, retornar o propio objeto
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer( invocation -> invocation.getArgument(0));
+            //mockito
+            when(ticketRepository.findById(1L))
+                    .thenReturn(Optional.of(ticket));
 
-        //when
-        Ticket ticketSaida = ticketService.checkout(1L);
+            //quando salvar, retornar o propio objeto
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer( invocation -> invocation.getArgument(0));
 
-        //then
-        assertEquals(BigDecimal.valueOf(15.0), ticketSaida.getValorPago());
+            //when
+            Ticket ticketSaida = ticketService.checkout(1L);
 
-    }
-    @Test
-    void deveCobrar25ReaisParaTempoAte120Minutos(){
-        Ticket ticket = new Ticket();
-        ticket.setId(1L);
+            //then
+            assertEquals(BigDecimal.valueOf(15.0), ticketSaida.getValorPago());
 
-        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(115));
+        }
+        @Test
+        void deveCobrar25ReaisParaTempoAte120Minutos(){
+            Ticket ticket = new Ticket();
+            ticket.setId(1L);
 
-        when(ticketRepository.findById(1L))
-                .thenReturn(Optional.of(ticket));
+            ticket.setDataEntrada(LocalDateTime.now().minusMinutes(115));
 
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer( invocation -> invocation.getArgument(0));
+            when(ticketRepository.findById(1L))
+                    .thenReturn(Optional.of(ticket));
 
-        Ticket ticketSaida = ticketService.checkout(1L);
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer( invocation -> invocation.getArgument(0));
 
-        assertEquals(BigDecimal.valueOf(25.0), ticketSaida.getValorPago());
-    }
-    @Test
-    void deveCobrar30ReaisParaTempoAcimaDe120Minutos(){
-        Ticket ticket = new Ticket();
-        ticket.setId(1L);
+            Ticket ticketSaida = ticketService.checkout(1L);
 
-        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(180));
+            assertEquals(BigDecimal.valueOf(25.0), ticketSaida.getValorPago());
+        }
+        @Test
+        void deveCobrar30ReaisParaTempoAcimaDe120Minutos(){
+            Ticket ticket = new Ticket();
+            ticket.setId(1L);
 
-        when(ticketRepository.findById(1L))
-                .thenReturn(Optional.of(ticket));
+            ticket.setDataEntrada(LocalDateTime.now().minusMinutes(180));
 
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer( invocation -> invocation.getArgument(0));
+            when(ticketRepository.findById(1L))
+                    .thenReturn(Optional.of(ticket));
 
-        Ticket ticketSaida = ticketService.checkout(1L);
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer( invocation -> invocation.getArgument(0));
 
-        assertEquals(BigDecimal.valueOf(30.0), ticketSaida.getValorPago());
-    }
-    @Test
-    void deveDefinirDataSaidaNoCheckout() {
-        //given
-        Ticket ticket = new Ticket();
-        ticket.setId(1L);
-        ticket.setDataEntrada(LocalDateTime.now().minusHours(1));
-        ticket.setDataSaida(null);
+            Ticket ticketSaida = ticketService.checkout(1L);
 
-        //mockito
-        when(ticketRepository.findById(1L))
-                .thenReturn(Optional.of(ticket));
+            assertEquals(BigDecimal.valueOf(30.0), ticketSaida.getValorPago());
+        }
 
-        //espelho
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        @Test
+        void deveDefinirDataSaidaNoCheckout() {
+            //given
+            Ticket ticket = new Ticket();
+            ticket.setId(1L);
+            ticket.setDataEntrada(LocalDateTime.now().minusHours(1));
+            ticket.setDataSaida(null);
 
-        //when
-        Ticket ticketProcessado = ticketService.checkout(1L);
+            //mockito
+            when(ticketRepository.findById(1L))
+                    .thenReturn(Optional.of(ticket));
 
-        //then
-        assertNotNull(ticketProcessado.getDataSaida(), "A data de saida deveria ter sido preenchida");
+            //espelho
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
 
-        //validacao
-        //verifica se a data de saida é depois da de entrada
-        assertTrue(ticketProcessado.getDataSaida().isAfter(ticket.getDataEntrada()));
-    }
-    @Test
-    void deveLancarExcecaoQuandoTicketNaoExisteNoCheckout(){
-        //given
-       Long idInexistente = 999L;
+            //when
+            Ticket ticketProcessado = ticketService.checkout(1L);
 
-       when(ticketRepository.findById(idInexistente))
-               .thenReturn(Optional.empty()); //ta vazio, pq ja vai lancar a exceção direto
+            //then
+            assertNotNull(ticketProcessado.getDataSaida(), "A data de saida deveria ter sido preenchida");
 
-       //when e then
-        assertThrows(ResponseStatusException.class, () ->{
-            ticketService.checkout(idInexistente);
-        });
-    }
-    @Test
-    void deveDefinirDataEntradaAutomaticamente(){
-        Ticket ticket = new Ticket();
-        ticket.setDataEntrada(null); //definir como  null
+            //validacao
+            //verifica se a data de saida é depois da de entrada
+            assertTrue(ticketProcessado.getDataSaida().isAfter(ticket.getDataEntrada()));
+        }
+        @Test
+        void deveLancarExcecaoQuandoTicketNaoExisteNoCheckout(){
+            //given
+            Long idInexistente = 999L;
 
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer( invocation -> invocation.getArgument(0));
+            when(ticketRepository.findById(idInexistente))
+                    .thenReturn(Optional.empty()); //ta vazio, pq ja vai lancar a exceção direto
 
-
-        Ticket Ticketsalvo = ticketService.save(ticket);
-
-        assertNotNull(Ticketsalvo.getDataEntrada(), "A data de entrada não pode ser nula.");
-    }
-    @Test
-    void deveManterDataEntradaQuandoJaDefinida(){
-        LocalDateTime dataAntiga = LocalDateTime.of(2005,6, 21, 12, 0);
-
-        Ticket ticket = new Ticket();
-        ticket.setDataEntrada(dataAntiga);
-
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
-
-        Ticket ticketSalvo = ticketService.save(ticket);
-
-        assertEquals(dataAntiga, ticketSalvo.getDataEntrada(), "A data não deveria ter sido alterada");
-
-
-    }
-    @Test
-    void deveBuscarVeiculoCompletoaoSalvar(){
-        //given
-        Ticket ticket = new Ticket();
-        ticket.setDataEntrada(LocalDateTime.now());
-
-        //o ticket chega so com o ID do veiculo
-        Veiculo veiculoComId = new Veiculo();
-        veiculoComId.setId(20L);
-        ticket.setVeiculo(veiculoComId);
-
-        //o veiculo completo que está no banco
-        Veiculo veiculoCompleto = new Veiculo();
-        veiculoCompleto.setId(20L);
-        veiculoCompleto.setPlaca("ABC1234");
-        veiculoCompleto.setCor("Rosa");
-
-        when(veiculoRepository.findById(20L))
-                .thenReturn(Optional.of(veiculoCompleto));
-
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        Ticket ticketSalvo = ticketService.save(ticket);
-
-        assertEquals("ABC1234", ticketSalvo.getVeiculo().getPlaca());
-        assertEquals("Rosa", ticketSalvo.getVeiculo().getCor());
+            //when e then
+            assertThrows(TicketNotFoundException.class, () ->{
+                ticketService.checkout(idInexistente);
+            });
+        }
 
     }
 
-    @Test
-    void deveLancarExcecaoQuandoVeiculoNaoExiste(){
-        Ticket ticket = new Ticket();
-        Veiculo veiculoIExistete = new Veiculo();
-        veiculoIExistete.setId(99L);
-        ticket.setVeiculo(veiculoIExistete);
+    // ====== TESTES  SAVE  ========
+    @Nested
+    @DisplayName("Testes do Método Save")
+    class Save{
 
-        when(veiculoRepository.findById(99L))
-                .thenReturn(Optional.empty());
+        @Test
+        void deveDefinirDataEntradaAutomaticamente(){
+            Ticket ticket = new Ticket();
+            ticket.setDataEntrada(null); //definir como  null
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                ticketService.save(ticket));
-
-        assertEquals("Veículo não encontrado", exception.getMessage());
-    }
-    @Test
-    void deveAtualizarValorPagoEDataSaida(){
-        Long id = 1L;
-
-        Ticket ticketExistente = new Ticket();
-        ticketExistente.setId(id);
-        ticketExistente.setValorPago(BigDecimal.ZERO);
-        ticketExistente.setDataSaida(null);
-
-        //ticket dados novos
-        Ticket ticketDadosNovos = new Ticket();
-        ticketDadosNovos.setValorPago(BigDecimal.valueOf(50.0));
-
-        //mockito
-        //o service busca e encontra o ticket antigo
-        when(ticketRepository.findById(id))
-                .thenReturn(Optional.of(ticketExistente));
-
-        // o service vai salvar as alterações e o answer vai devolver o objeto
-        when(ticketRepository.save(any(Ticket.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        //when
-        Ticket resultado = ticketService.update(id, ticketDadosNovos);
-
-        //then
-        //vericar se o valor foi atualziado pra 50
-        // 0 = igual matematicamente
-        assertEquals(0, BigDecimal.valueOf(50.0).compareTo(resultado.getValorPago()));
-        assertNotNull(resultado.getDataSaida(), "A data de saida nao deveria ser preenchida no update");
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer( invocation -> invocation.getArgument(0));
 
 
-    }
-    @Test
-    void deveLancarExcecaoQuandoTicketNaoExisteNoUpdate() {
-        Long idInexistente = 100L;
-        Ticket dadosNovos = new Ticket();
+            Ticket Ticketsalvo = ticketService.save(ticket);
 
-        //simular um ticket q nao existe
-        when(ticketRepository.findById(idInexistente)).thenReturn(Optional.empty());
+            assertNotNull(Ticketsalvo.getDataEntrada(), "A data de entrada não pode ser nula.");
+        }
+        @Test
+        void deveManterDataEntradaQuandoJaDefinida(){
+            LocalDateTime dataAntiga = LocalDateTime.of(2005,6, 21, 12, 0);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ticketService.update(idInexistente, dadosNovos);
-        });
+            Ticket ticket = new Ticket();
+            ticket.setDataEntrada(dataAntiga);
 
-        assertEquals("Ticket não encontrado", exception.getMessage());
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-    //verificar que nao chamou o save
-        verify(ticketRepository, never()).save(any(Ticket.class));
-    }
+            Ticket ticketSalvo = ticketService.save(ticket);
 
-    @Test
-    void deveDeletarTicketExistente(){
-        Long id = 1L;
-        Ticket ticket = new Ticket();
-        ticket.setId(id);
+            assertEquals(dataAntiga, ticketSalvo.getDataEntrada(), "A data não deveria ter sido alterada");
 
-        when(ticketRepository.existsById(id))
-                .thenReturn(true);
 
-        ticketService.deletar(id);
+        }
+        @Test
+        void deveBuscarVeiculoCompletoaoSalvar(){
+            //given
+            Ticket ticket = new Ticket();
+            ticket.setDataEntrada(LocalDateTime.now());
 
-        //verifica que o comando deletar foi chamado 1 vez.
-        verify(ticketRepository, times(1)).deleteById(id);
-    }
+            //o ticket chega so com o ID do veiculo
+            Veiculo veiculoComId = new Veiculo();
+            veiculoComId.setId(20L);
+            ticket.setVeiculo(veiculoComId);
 
-    @Test
-    void deveLancarExcecaoQuandoTicketNaoExisteNoDeletar() {
-        Long idInexistente = 99L;
-        when(ticketRepository.existsById(idInexistente)).thenReturn(false);
+            //o veiculo completo que está no banco
+            Veiculo veiculoCompleto = new Veiculo();
+            veiculoCompleto.setId(20L);
+            veiculoCompleto.setPlaca("ABC1234");
+            veiculoCompleto.setCor("Rosa");
 
-        assertThrows(RuntimeException.class, () -> {
-            ticketService.deletar(idInexistente);
-        });
+            when(veiculoRepository.findById(20L))
+                    .thenReturn(Optional.of(veiculoCompleto));
 
-        //  garante que ele nem tentou deletar no banco
-        verify(ticketRepository, never()).deleteById(anyLong());
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
+
+            Ticket ticketSalvo = ticketService.save(ticket);
+
+            assertEquals("ABC1234", ticketSalvo.getVeiculo().getPlaca());
+            assertEquals("Rosa", ticketSalvo.getVeiculo().getCor());
+
+        }
+
+        @Test
+        void deveLancarExcecaoQuandoVeiculoNaoExiste(){
+            Ticket ticket = new Ticket();
+            Veiculo veiculoIExistete = new Veiculo();
+            veiculoIExistete.setId(99L);
+            ticket.setVeiculo(veiculoIExistete);
+
+            when(veiculoRepository.findById(99L))
+                    .thenReturn(Optional.empty());
+
+            RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                    ticketService.save(ticket));
+
+            assertEquals("Veículo não encontrado com o ID: 99", exception.getMessage());
+        }
     }
 
-    @Test
-    void deveRetornarListaDeTickets(){
-        Ticket ticket1 = new Ticket();
-        Ticket ticket2 = new Ticket();
-        List<Ticket> listaSimulada = List.of(ticket1, ticket2);
+    // ====== TESTES  UPDATE  ========
 
-        when(ticketRepository.findAll())
-                .thenReturn(listaSimulada);
+    @Nested
+    @DisplayName("Testes do Método Update")
+    class Update{
+        @Test
+        void deveAtualizarValorPagoEDataSaida(){
+            Long id = 1L;
 
-        List<Ticket> resultado = ticketService.listarTickets();
+            Ticket ticketExistente = new Ticket();
+            ticketExistente.setId(id);
+            ticketExistente.setValorPago(BigDecimal.ZERO);
+            ticketExistente.setDataSaida(null);
 
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        //verifica se o service foi no banco buscar
-        verify(ticketRepository, times(1)).findAll();
+            //ticket dados novos
+            Ticket ticketDadosNovos = new Ticket();
+            ticketDadosNovos.setValorPago(BigDecimal.valueOf(50.0));
 
+            //mockito
+            //o service busca e encontra o ticket antigo
+            when(ticketRepository.findById(id))
+                    .thenReturn(Optional.of(ticketExistente));
+
+            // o service vai salvar as alterações e o answer vai devolver o objeto
+            when(ticketRepository.save(any(Ticket.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
+
+            //when
+            Ticket resultado = ticketService.update(id, ticketDadosNovos);
+
+            //then
+            //vericar se o valor foi atualziado pra 50
+            // 0 = igual matematicamente
+            assertEquals(0, BigDecimal.valueOf(50.0).compareTo(resultado.getValorPago()));
+            assertNotNull(resultado.getDataSaida(), "A data de saida nao deveria ser preenchida no update");
+
+
+        }
+        @Test
+        void deveLancarExcecaoQuandoTicketNaoExisteNoUpdate() {
+            Long idInexistente = 100L;
+            Ticket dadosNovos = new Ticket();
+
+            //simular um ticket q nao existe
+            when(ticketRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+            RuntimeException exception = assertThrows(TicketNotFoundException.class, () -> {
+                ticketService.update(idInexistente, dadosNovos);
+            });
+
+            assertEquals("Ticket não encontrado: 100", exception.getMessage());
+
+            //verificar que nao chamou o save
+            verify(ticketRepository, never()).save(any(Ticket.class));
+        }
 
     }
 
-    @Test
-    void deveRetornarListaVaziaQuandoNaoHaTickets(){
-        List<Ticket> listaSimulada = List.of();
 
-        when(ticketRepository.findAll())
-                .thenReturn(listaSimulada);
+    // ====== TESTES  DELETAR  ========
+@Nested
+@DisplayName("Testes do Método Deletar")
+class Deletar{
 
-        List<Ticket> resultado = ticketService.listarTickets();
+        @Test
+        void deveDeletarTicketExistente(){
+            Long id = 1L;
+            Ticket ticket = new Ticket();
+            ticket.setId(id);
 
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty(), "A lista deveria estar vazia");
-        verify(ticketRepository, times(1)).findAll();
+            when(ticketRepository.existsById(id))
+                    .thenReturn(true);
+
+            ticketService.deletar(id);
+
+            //verifica que o comando deletar foi chamado 1 vez.
+            verify(ticketRepository, times(1)).deleteById(id);
+        }
+
+        @Test
+        void deveLancarExcecaoQuandoTicketNaoExisteNoDeletar() {
+            Long idInexistente = 99L;
+            when(ticketRepository.existsById(idInexistente)).thenReturn(false);
+
+            assertThrows(TicketNotFoundException.class, () -> {
+                ticketService.deletar(idInexistente);
+            });
+
+            //  garante que ele nem tentou deletar no banco
+            verify(ticketRepository, never()).deleteById(anyLong());
+        }
 
     }
 
+    // ====== TESTES  LISTARTICKETS  ========
+    @Nested
+    @DisplayName("Testes do Método ListarTickets")
+    class ListarTickets{
+
+        @Test
+        void deveRetornarListaDeTickets(){
+            Ticket ticket1 = new Ticket();
+            Ticket ticket2 = new Ticket();
+            List<Ticket> listaSimulada = List.of(ticket1, ticket2);
+
+            when(ticketRepository.findAll())
+                    .thenReturn(listaSimulada);
+
+            List<Ticket> resultado = ticketService.listarTickets();
+
+            assertNotNull(resultado);
+            assertEquals(2, resultado.size());
+            //verifica se o service foi no banco buscar
+            verify(ticketRepository, times(1)).findAll();
+
+
+        }
+
+        @Test
+        void deveRetornarListaVaziaQuandoNaoHaTickets(){
+            List<Ticket> listaSimulada = List.of();
+
+            when(ticketRepository.findAll())
+                    .thenReturn(listaSimulada);
+
+            List<Ticket> resultado = ticketService.listarTickets();
+
+            assertNotNull(resultado);
+            assertTrue(resultado.isEmpty(), "A lista deveria estar vazia");
+            verify(ticketRepository, times(1)).findAll();
+
+        }
+
+    }
 
 }
 

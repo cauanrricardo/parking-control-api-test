@@ -1,68 +1,101 @@
 package com.parking.api.service;
 
+import com.parking.api.exception.TicketNotFoundException;
+import com.parking.api.exception.VeiculoNotFoundException;
 import com.parking.api.model.Ticket;
 import com.parking.api.model.Veiculo;
 import com.parking.api.repository.TicketRepository;
 import com.parking.api.repository.VeiculoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class TicketService {
 
-    @Autowired
-    private TicketRepository repository;
+    private final TicketRepository repository;
+    private final  VeiculoRepository veiculoRepository;
 
 
-    @Autowired
-    private VeiculoRepository veiculoRepository; // Use o Repository aqui
-
+@Transactional
     public List<Ticket> listarTickets(){
+    log.debug("Listando tickets");
         return repository.findAll();
     }
 
     public Ticket save(Ticket ticket) {
+        log.info("Criando ticket");
         if (ticket.getDataEntrada() == null) {
             ticket.setDataEntrada(LocalDateTime.now());
         }
 
         if (ticket.getVeiculo() != null && ticket.getVeiculo().getId() > 0) {
+            Long veiculoId = ticket.getVeiculo().getId();
+            log.debug("Carregando veiculoId={} para associar no ticket", veiculoId);
+
             Veiculo veiculoCompleto = veiculoRepository.findById(ticket.getVeiculo().getId())
-                    .orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
+                    .orElseThrow(() -> {
+                        log.warn("Falha ao criar ticket: Veículo {} não encontrado", veiculoId);
+                         return  new VeiculoNotFoundException(veiculoId);
+                    });
+
             ticket.setVeiculo(veiculoCompleto);
         }
 
-        return repository.save(ticket);
+        Ticket salvo = repository.save(ticket);
+        log.info("Ticket criado: id={}", salvo.getId());
+        return salvo;
+
     }
     public Ticket update(Long id, Ticket novoTicket){
+        log.info("Atualizando ticket: id={}", id);
+
         Ticket ticketExistente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
+                .orElseThrow(() -> {
+                    log.warn("Ticket não encontrado para update: id={}", id);
+                    return new TicketNotFoundException(id);
+                });
 
         ticketExistente.setValorPago(novoTicket.getValorPago());
         ticketExistente.setDataSaida(LocalDateTime.now());
 
-        return  repository.save(ticketExistente);
+        Ticket atualizado =  repository.save(ticketExistente);
+        log.info("Ticket atualizado: id={}", atualizado.getId());
+        return atualizado;
         
     }
 
     public void deletar(Long id){
+
+        log.info("Deletando ticket: id={}", id);
+
         if(!repository.existsById(id)){
-            throw new RuntimeException("Ticket não encontrado");
+            log.warn("Ticket não encontrado para delete: id={}", id);
+            throw new TicketNotFoundException(id);
         }
         repository.deleteById(id);
+        log.info("Ticket deletado: id={}", id);
     }
 
     public Ticket checkout(Long id){
+        log.info("Checkout do ticket: id={}", id);
+
         //buscar o ticket no banco
         Ticket ticket = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket não encontrado"));
+                .orElseThrow(() -> {
+                    log.warn("Ticket não encontrado para checkout: id={}", id);
+                    return new TicketNotFoundException(id);
+                });
+
         //definir a hora de saida
         ticket.setDataSaida(LocalDateTime.now());
 
@@ -80,10 +113,12 @@ public class TicketService {
         } else {
             valor = BigDecimal.valueOf(30.0);
         }
+
         ticket.setValorPago(valor);
 
-        return  repository.save(ticket);
-
+        Ticket finalizado = repository.save(ticket);
+        log.info("Checkout finalizado: id={} minutos={} valorPago={}", finalizado.getId(), minutos, valor);
+        return finalizado;
     }
 
 }

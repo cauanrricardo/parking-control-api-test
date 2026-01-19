@@ -2,6 +2,7 @@ package com.parking.api.service;
 
 import com.parking.api.model.Motorista;
 import com.parking.api.repository.MotoristaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MotoristaService {
 
-    @Autowired
-    private MotoristaRepository repository;
+
+    private final MotoristaRepository repository;
 
     public List<Motorista> listarMotorista(){
         return  repository.findAll();
