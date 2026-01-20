@@ -3,36 +3,42 @@ package com.parking.api.controller;
 import com.parking.api.model.Motorista;
 import com.parking.api.service.MotoristaService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/motorista")
+@RequiredArgsConstructor
 public class MotoristaController {
 
-    @Autowired
-    private MotoristaService service;
+    private final MotoristaService service;
 
     @GetMapping
-    public List<Motorista> listar(){
-        return service.listarMotorista();
+    public ResponseEntity<List<Motorista>> listar(){
+        return ResponseEntity.ok(service.listarMotorista());
     }
 
     @PostMapping
-    public Motorista criar( @RequestBody Motorista motorista){
-        return service.salvar(motorista);
+    public ResponseEntity<Motorista> criar( @RequestBody Motorista motorista){
+        Motorista motoristaCriado = service.salvar(motorista);
+        URI location = URI.create("/api/motorista" + motoristaCriado.getId());
+        return  ResponseEntity.created(location).body(motorista);
     }
 
     @PutMapping("/{id}")
-    public Motorista update(@PathVariable Long id, @Valid @RequestBody Motorista motorista){
-        return service.update(id, motorista);
+    public ResponseEntity<Motorista> update(@PathVariable Long id, @Valid @RequestBody Motorista motorista){
+        Motorista motoristaAtualizado = service.update(id, motorista);
+        return  ResponseEntity.ok(motoristaAtualizado);
     }
 
     @DeleteMapping("/{id}")
-    public  void deletar( @PathVariable Long id){
-    service.deletar(id);
+    public  ResponseEntity<Void> deletar( @PathVariable Long id){
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 
 

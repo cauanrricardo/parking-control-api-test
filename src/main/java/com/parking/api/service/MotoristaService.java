@@ -1,59 +1,84 @@
 package com.parking.api.service;
 
+import com.parking.api.exception.MotoristaNotFoundException;
+import com.parking.api.exception.RgDuplicadoException;
 import com.parking.api.model.Motorista;
 import com.parking.api.repository.MotoristaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class MotoristaService {
-
 
     private final MotoristaRepository repository;
 
     public List<Motorista> listarMotorista(){
+        log.debug("Listando motoristas");
         return  repository.findAll();
     }
 
+    @Transactional
     public Motorista salvar(Motorista motorista){
+        log.info("Criando motorista: nome={}", motorista.getNomeCompleto());
+
         //validacao nome
         if (motorista.getNomeCompleto() == null || motorista.getNomeCompleto().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome não pode estar vazio");
+            log.warn("Tentativa de criar motorista com nome vazio");
+            throw new IllegalArgumentException("Nome não pode estar vazio");
         }
         if( motorista.getNomeCompleto().trim().length() < 3){
-            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome deve ter no minimo 3 caracteres");
+            log.warn("Nome inválido (muito curto): {}", motorista.getNomeCompleto());
+            throw  new IllegalArgumentException("Nome deve ter no mínimo 3 caracteres");
         }
 
         //validacao rg
         String rgPadrao = "^\\d{2}\\.\\d{3}-\\d{3}$";
         if (!motorista.getRg().matches(rgPadrao)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RG deve seguir o padrão 00.000-000");
+            log.warn("RG inválido: {}", motorista.getRg());
+            throw new IllegalArgumentException("RG deve seguir o padrão 00.000-000");
         }
-        repository.findByRg(motorista.getRg()).ifPresent(motorista1 -> {
-            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "RG já cadastrado");
-        });
+
+       if(repository.existsById(motorista.getRg())){
+           log.warn("RG já cadastrado: {}", motorista.getRg());
+           throw new RgDuplicadoException(motorista.getRg());
+       }
+
         return  repository.save(motorista);
     }
 
+    @Transactional
     public Motorista update(Long id, Motorista novoMotorista){
+        log.info("Atualizando motorista: id={}", id);
+
         Motorista motoristaExistente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado"));
+                .orElseThrow(() -> {
+                    log.warn("Motorista não encontrado para update: id={}", id);
+                    return new  MotoristaNotFoundException(id);
+                });
 
         motoristaExistente.setNomeCompleto(novoMotorista.getNomeCompleto());
         motoristaExistente.setRg(novoMotorista.getRg());
 
-        return  repository.save(motoristaExistente);
+        Motorista atualizado =  repository.save(motoristaExistente);
+        log.info("Motorista atualizado: id={} nome={}", atualizado.getId(), atualizado.getNomeCompleto());
+        return atualizado;
     }
+
     public void deletar(Long id){
+        log.info("Deletando motorista: id={}", id);
+
         if(!repository.existsById(id)){
-            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw  new MotoristaNotFoundException(id);
         }
-    repository.deleteById(id);
+        repository.deleteById(id);
+        log.info("Motorista deletado: id={}", id);
     }
 }

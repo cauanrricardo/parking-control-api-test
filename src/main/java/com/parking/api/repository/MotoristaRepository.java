@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface MotoristaRepository extends JpaRepository<Motorista, Long> {
     Optional<Motorista> findByRg(String rg);
+    boolean existsById(String rg);
 }

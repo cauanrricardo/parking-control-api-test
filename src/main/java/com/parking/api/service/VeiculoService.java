@@ -21,7 +21,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class VeiculoService {
 
-
     private final VeiculoRepository repository;
     private final MotoristaRepository motoristaRepository;
 

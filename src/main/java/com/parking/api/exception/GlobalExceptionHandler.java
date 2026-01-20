@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -61,6 +62,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
+
+    @ExceptionHandler(RgDuplicadoException.class)
+    public ResponseEntity<ApiError> handleRgDuplicado(RgDuplicadoException ex) {
+        ApiError body = new ApiError(
+                Instant.now().toString(),
+                HttpStatus.CONFLICT.value(), // 409
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+
 
 
     public record ApiError(String timestamp, int status, String message) {}
