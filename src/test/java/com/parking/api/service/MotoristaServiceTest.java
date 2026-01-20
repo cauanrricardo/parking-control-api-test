@@ -2,7 +2,6 @@ package com.parking.api.service;
 
 import com.parking.api.model.Motorista;
 import com.parking.api.repository.MotoristaRepository;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -178,11 +177,28 @@ public class MotoristaServiceTest {
             assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         }
 
+    }
+
+    @Nested
+    @DisplayName("Testes do Método Listar")
+    class Listar{
+
 
     }
 
+    @Nested
+    @DisplayName("Testes do Método Atualizar")
+    class Atualizar{
 
 
+    }
+
+    @Nested
+    @DisplayName("Testes do Método Deletar")
+    class Deletar{
+
+
+    }
 
 
 }
