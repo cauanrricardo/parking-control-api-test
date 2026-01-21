@@ -292,6 +292,32 @@ public class MotoristaServiceTest {
     @DisplayName("Testes do Método Deletar")
     class Deletar{
 
+        @Test
+        @DisplayName("Deve deletar motorista com sucesso quando o ID existe")
+        void deveDeletarMotoristaComSucesso() {
+            Long id = 99L;
+
+            when(repository.existsById(id))
+                    .thenReturn(true);
+
+            service.deletar(id);
+
+            verify(repository, times(1)).deleteById(id);
+        }
+
+        @Test
+        @DisplayName("Deve lançar MotoristaNotFoundException ao tentar deletar motorista que não existe")
+        void naoDeveDeletarMotoristaInexistente() {
+            Long idInexistente = 99L;
+
+            when(repository.existsById(idInexistente)).thenReturn(false);
+
+            assertThrows(MotoristaNotFoundException.class, () -> {
+                service.deletar(idInexistente);
+            });
+
+            verify(repository, never()).deleteById(anyLong());
+        }
 
     }
 
