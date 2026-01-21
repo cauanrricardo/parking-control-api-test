@@ -12,11 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MotoristaServiceTest {
@@ -182,6 +182,50 @@ public class MotoristaServiceTest {
     @Nested
     @DisplayName("Testes do Método Listar")
     class Listar{
+
+        @Test
+        @DisplayName("Deve listar todos os motoristas")
+        void deveListarTodosOsMotoristas(){
+
+            Motorista motorista1 = new Motorista();
+            motorista1.setNomeCompleto("Cauan Ricardo");
+            motorista1.setRg("20.458-99");
+            motorista1.setId(1L);
+
+            Motorista motorista2 = new Motorista();
+            motorista2.setNomeCompleto("Ricardo Silva");
+            motorista2.setRg("00.008-99");
+            motorista2.setId(2L);
+
+            List<Motorista> listaMotoristas = List.of(motorista1, motorista2);
+
+            when(repository.findAll())
+                    .thenReturn(listaMotoristas);
+
+            List<Motorista> resultado = service.listarMotorista();
+
+            assertNotNull(listaMotoristas);
+            assertEquals(2, resultado.size());
+            assertEquals("Cauan Ricardo", resultado.get(0).getNomeCompleto());
+            assertEquals("Ricardo Silva", resultado.get(1).getNomeCompleto());
+
+            verify(repository, times(1)).findAll();
+        }
+
+        @Test
+        @DisplayName("Deve retornar lista vazia quando não há motoristas")
+        void deveRetornarListaVaziaQuandoNaoHaMotoristas(){
+         List<Motorista> listaVazia = List.of();
+
+        when(repository.findAll())
+            .thenReturn(listaVazia);
+
+        List<Motorista> resultado = service.listarMotorista();
+
+        assertEquals(0, resultado.size());
+
+        verify(repository, never()).save(any(Motorista.class));
+        }
 
 
     }
