@@ -27,6 +27,8 @@ public class MotoristaService {
 
     @Transactional
     public Motorista salvar(Motorista motorista){
+        motorista.setId(null);
+
         log.info("Criando motorista: nome={}", motorista.getNomeCompleto());
 
         //validacao nome
@@ -46,7 +48,7 @@ public class MotoristaService {
             throw new IllegalArgumentException("RG deve seguir o padrão 00.000-000");
         }
 
-       if(repository.existsById(motorista.getRg())){
+       if(repository.existsByRg(motorista.getRg())){
            log.warn("RG já cadastrado: {}", motorista.getRg());
            throw new RgDuplicadoException(motorista.getRg());
        }
