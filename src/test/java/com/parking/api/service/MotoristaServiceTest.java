@@ -1,5 +1,6 @@
 package com.parking.api.service;
 
+import com.parking.api.exception.MotoristaNotFoundException;
 import com.parking.api.model.Motorista;
 import com.parking.api.repository.MotoristaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -234,6 +235,56 @@ public class MotoristaServiceTest {
     @DisplayName("Testes do Método Atualizar")
     class Atualizar{
 
+        @Test
+        @DisplayName("Deve atualizar motorista com sucesso quando o ID existe")
+        void deveAtualizarMotoristaComSucesso() {
+            Long id = 1L;
+
+            Motorista motoristaAntigo = new Motorista();
+            motoristaAntigo.setId(id);
+            motoristaAntigo.setNomeCompleto("Madruga");
+            motoristaAntigo.setRg("101.101-009");
+
+            Motorista motoristaAtualizado = new Motorista();
+            motoristaAtualizado.setNomeCompleto("Chaves Del Ocho");
+            motoristaAtualizado.setRg("888.888-888");
+
+            when(repository.findById(id))
+                    .thenReturn(Optional.of(motoristaAntigo));
+
+            when(repository.save(any(Motorista.class)))
+                    .thenAnswer(invocationOnMock ->  invocationOnMock.getArgument(0));
+
+            Motorista resultado = service.update(id, motoristaAtualizado);
+
+            assertNotNull(resultado);
+            assertEquals("Chaves Del Ocho", resultado.getNomeCompleto());
+            assertEquals("888.888-888", resultado.getRg());
+            assertEquals(id, resultado.getId());
+
+            verify(repository, times(1)).findById(id);
+            verify(repository, times(1)).save(any(Motorista.class));
+
+        }
+
+        @Test
+        @DisplayName("Deve lançar MotoristaNotFoundException ao tentar atualizar motorista inexistente")
+        void naoDeveAtualizarMotoristaInexistente() {
+            Long idInexistente = 99L;
+            Motorista dadosParaAtualizar = new Motorista();
+            dadosParaAtualizar.setNomeCompleto("Quiqo");
+
+            when(repository.findById(idInexistente))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(MotoristaNotFoundException.class, () -> {
+                service.update(idInexistente, dadosParaAtualizar);
+            });
+
+            verify(repository, never()).save(any(Motorista.class));
+            verify(repository, times(1)).findById(idInexistente);
+
+        }
 
     }
 
