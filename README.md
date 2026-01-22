@@ -3,7 +3,7 @@
 > API RESTful para gestão de estacionamentos desenvolvida como projeto pessoal, com foco total na aprendizagem de **Testes Unitários (Mockito)** e Arquitetura Spring Boot.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.0-green)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.9-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue)
 ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85ea2d)
 ![JUnit 5](https://img.shields.io/badge/Testing-JUnit5_&_Mockito-red)
@@ -53,6 +53,16 @@ Implementação de um `GlobalExceptionHandler` centralizado:
 ### 4. Observabilidade e Documentação
 * **Logs:** Uso do `@Slf4j` para monitoramento das operações críticas no Service.
 * **Swagger UI:** Documentação interativa disponível em `/swagger-ui.html`, permitindo testar a API sem necessidade de ferramentas externas.
+
+### 5. CI (Integração Contínua) com GitHub Actions
+Este repositório possui um pipeline de **CI** configurado com **GitHub Actions** para garantir qualidade e estabilidade a cada mudança no código:
+
+- Executa automaticamente **build + testes** a cada **push** e **pull request** na branch `main`
+- Usa **Java 17** no runner
+- Roda os testes com profile `test` (H2) para evitar dependência do PostgreSQL no ambiente de CI
+- Publica relatórios de teste (Surefire) como artefato (quando configurado)
+
+📌 Workflow: `.github/workflows/ci.yml`
 
 ---
 
