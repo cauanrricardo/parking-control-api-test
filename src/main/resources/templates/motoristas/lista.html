@@ -1,47 +1,44 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Lista de Motoristas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>Motoristas</title>
 </head>
 <body>
-<div class="container mt-5">
-    <h1>Motoristas</h1>
+<h1>Lista de Motoristas</h1>
 
-    <a th:href="@{/motoristas/novo}" class="btn btn-primary mb-3">Novo Motorista</a>
+<p th:if="${msg}" th:text="${msg}" style="color:green;"></p>
+<p th:if="${erro}" th:text="${erro}" style="color:red;"></p>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>RG</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="motorista : ${motoristas}">
-            <td th:text="${motorista.id}"></td>
-            <td th:text="${motorista.nomeCompleto}"></td>
-            <td th:text="${motorista.rg}"></td>
-            <td>
-                <a th:href="@{/motoristas/editar/{id}(id=${motorista.id})}"
-                   class="btn btn-sm btn-warning">Editar</a>
+<a th:href="@{/motoristas/novo}">Novo Motorista</a>
 
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>RG</th>
+        <th>Ações</th> <!-- ← NOVA COLUNA -->
+    </tr>
+    </thead>
 
-                <form th:action="@{/motoristas/{id}/deletar(id=${motorista.id})}"
-                      method="post"
-                      style="display: inline;">
-                    <button type="submit"
-                            class="btn btn-sm btn-danger"
-                            onclick="return confirm('Tem certeza?')">
-                        Deletar
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(motoristas)}">
+        <td colspan="4">Nenhum motorista cadastrado.</td> <!-- ← colspan="4" -->
+    </tr>
+
+    <tr th:each="m : ${motoristas}">
+        <td th:text="${m.id}">1</td>
+        <td th:text="${m.nomeCompleto}">Fulano</td>
+        <td th:text="${m.rg}">00.000-000</td>
+        <td> <!-- ← ADICIONE AQUI -->
+            <a th:href="@{/motoristas/{id}/editar(id=${m.id})}">Editar</a>
+            <form th:action="@{/motoristas/{id}/excluir(id=${m.id})}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Excluir motorista?')">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

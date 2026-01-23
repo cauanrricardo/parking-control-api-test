@@ -3,8 +3,6 @@ package com.parking.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Cache;
-import org.hibernate.validator.constraints.Currency;
 
 import java.util.List;
 
