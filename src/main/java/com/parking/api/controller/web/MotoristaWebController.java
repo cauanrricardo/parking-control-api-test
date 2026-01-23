@@ -3,6 +3,7 @@ package com.parking.api.controller.web;
 
 import com.parking.api.model.Motorista;
 import com.parking.api.service.MotoristaService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +18,17 @@ public class MotoristaWebController {
 
     private final MotoristaService service;
 
+    private void noCache(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+    }
+
     @GetMapping
-    public String listar(Model model) {
+    public String listar(Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+
         model.addAttribute("motoristas", service.listarMotorista());
         return "motoristas/lista";
     }
@@ -47,6 +57,7 @@ public class MotoristaWebController {
     public String editar(@PathVariable Long id, Model model) {
         Motorista motorista = service.buscarPorId(id);
         model.addAttribute("motorista", motorista);
+        model.addAttribute("editando", true);
         return "motoristas/forms";
     }
 
@@ -63,9 +74,17 @@ public class MotoristaWebController {
     }
 
     @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id) {
-        service.deletar(id);
-        return "redirect:/motoristas";
+    public String excluir(@PathVariable Long id, RedirectAttributes ra) {
+        try{
+            service.deletar(id);
+            ra.addFlashAttribute("msg", "Motorista excluido com sucesso");
+            return "redirect:/motoristas";
+        } catch (Exception e){
+            ra.addFlashAttribute("erro", "Erro ao excluir: "+ e.getMessage());
+            return "redirect:/motoristas";
+        }
+
+
     }
 
 
