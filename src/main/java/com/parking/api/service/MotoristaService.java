@@ -10,8 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.List;
 
 @Service
@@ -21,18 +19,6 @@ import java.util.List;
 public class MotoristaService {
 
     private final MotoristaRepository repository;
-    private final DataSource dataSource;
-
-    private void logDb(String operacao) {
-        try (Connection c = dataSource.getConnection()) {
-            log.warn("[DB][{}] url={}", operacao, c.getMetaData().getURL());
-            log.warn("[DB][{}] user={}", operacao, c.getMetaData().getUserName());
-            log.warn("[DB][{}] schema={}", operacao, c.getSchema());
-            log.warn("[DB][{}] database={}", operacao, c.getCatalog());
-        } catch (Exception e) {
-            log.warn("[DB][{}] falha ao ler metadados: {}", operacao, e.getMessage());
-        }
-    }
 
     public List<Motorista> listarMotorista() {
         log.debug("Listando motoristas");
@@ -41,7 +27,6 @@ public class MotoristaService {
 
     @Transactional
     public Motorista salvar(Motorista motorista) {
-        logDb("SALVAR");
         motorista.setId(null);
 
         if (motorista.getNomeCompleto() == null || motorista.getNomeCompleto().isEmpty()) {
@@ -68,8 +53,6 @@ public class MotoristaService {
 
     @Transactional
     public Motorista update(Long id, Motorista novoMotorista) {
-        logDb("UPDATE");
-
         Motorista motoristaExistente = repository.findById(id)
                 .orElseThrow(() -> new MotoristaNotFoundException(id));
 
@@ -89,8 +72,6 @@ public class MotoristaService {
 
     @Transactional
     public void deletar(Long id) {
-        logDb("DELETAR");
-
         if (!repository.existsById(id)) {
             throw new MotoristaNotFoundException(id);
         }
