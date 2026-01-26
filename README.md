@@ -229,12 +229,6 @@ Contribuições são bem-vindas! Para contribuir:
 
 ---
 
-## 📄 Licença
-
-Este projeto é de código aberto e está disponível para fins educacionais.
-
----
-
 ## 👤 Autor
 
 **Cauan Ricardo**
