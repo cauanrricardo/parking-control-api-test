@@ -1,0 +1,115 @@
+<!-- src/main/resources/templates/index.html -->
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Início</title>
+    <style>
+        :root{
+            --bg:#f6f7fb;
+            --card:#ffffff;
+            --text:#111827;
+            --muted:#6b7280;
+            --border:#e5e7eb;
+            --primary:#2563eb;
+            --primary-hover:#1d4ed8;
+            --radius:10px;
+            --shadow:0 8px 20px rgba(17,24,39,.06);
+            --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        *{ box-sizing: border-box; }
+        body{
+            margin:0;
+            font-family:var(--font);
+            background:var(--bg);
+            color:var(--text);
+        }
+
+        .container{
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        .page-header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        h1{ margin:0; font-size: 20px; }
+
+        .card{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow:hidden;
+        }
+
+        .content{
+            padding: 14px;
+        }
+
+        .muted{ color:var(--muted); font-size: 13px; }
+
+        .grid{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border:1px solid var(--border);
+            background:#fff;
+            color: var(--text);
+            text-decoration:none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor:pointer;
+        }
+        .btn:hover{ background:#f9fafb; }
+
+        .btn.primary{
+            border-color: transparent;
+            background: var(--primary);
+            color:#fff;
+        }
+        .btn.primary:hover{ background: var(--primary-hover); }
+
+        @media (max-width: 720px){
+            .grid{ grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>Início</h1>
+        <div class="muted">Painel do sistema</div>
+    </div>
+
+    <div class="card">
+        <div class="content">
+            <div class="muted">Acessos rápidos:</div>
+
+            <div class="grid">
+                <a class="btn primary" th:href="@{/tickets}">Tickets</a>
+                <a class="btn" th:href="@{/veiculos}">Veículos</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
