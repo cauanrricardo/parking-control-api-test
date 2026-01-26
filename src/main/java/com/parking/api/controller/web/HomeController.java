@@ -14,7 +14,7 @@ public class HomeController {
         response.setDateHeader("Expires", 0);
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", "/Inicio", "/Inicio/"})
     public String home(HttpServletResponse response) {
         noCache(response);
         return "index";

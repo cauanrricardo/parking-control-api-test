@@ -34,13 +34,21 @@
             padding: 24px 16px 40px;
         }
 
-        .page-header{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:12px;
-            margin-bottom: 14px;
-        }
+.header-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap: wrap;
+}
+
+.page-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
 
         h1{
             margin:0;
@@ -179,8 +187,12 @@
 
     <div class="page-header">
         <h1>Veículos</h1>
-        <a class="btn primary" th:href="@{/veiculos/novo}">Novo veículo</a>
+        <div class="header-actions">
+            <a class="btn primary" th:href="@{/veiculos/novo}">Novo veículo</a>
+            <a class="btn" th:href="@{/}">Início</a>
+        </div>
     </div>
+
 
     <div class="card">
         <div class="messages">

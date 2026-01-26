@@ -28,11 +28,13 @@ public class TicketController {
         return ResponseEntity.created(location).body(criado);
     }
 
-    @PutMapping({"/{id}"})
-    public ResponseEntity<Ticket> update(@PathVariable Long id, @RequestBody Ticket ticket){
-        Ticket atualizado = service.update(id, ticket);
-        return ResponseEntity.ok(atualizado);
+    @PutMapping("/{id}/checkout")
+    public ResponseEntity<Ticket> checkout(@PathVariable Long id) {
+        Ticket ticket = service.checkout(id);
+        return ResponseEntity.ok(ticket);
     }
+
+
     @DeleteMapping({"/{id}"})
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deletar(id);
