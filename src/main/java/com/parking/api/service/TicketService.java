@@ -1,3 +1,4 @@
+// src/main/java/com/parking/api/service/TicketService.java
 package com.parking.api.service;
 
 import com.parking.api.exception.TicketNotFoundException;
@@ -6,11 +7,11 @@ import com.parking.api.model.Ticket;
 import com.parking.api.model.Veiculo;
 import com.parking.api.repository.TicketRepository;
 import com.parking.api.repository.VeiculoRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,40 +24,42 @@ import java.util.List;
 public class TicketService {
 
     private final TicketRepository repository;
-    private final  VeiculoRepository veiculoRepository;
+    private final VeiculoRepository veiculoRepository;
 
-
-@Transactional
-    public List<Ticket> listarTickets(){
-    log.debug("Listando tickets");
-        return repository.findAll();
+    public List<Ticket> listarTickets() {
+        log.debug("Listando tickets");
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
+    @Transactional
     public Ticket save(Ticket ticket) {
         log.info("Criando ticket");
+
         if (ticket.getDataEntrada() == null) {
             ticket.setDataEntrada(LocalDateTime.now());
         }
 
-        if (ticket.getVeiculo() != null && ticket.getVeiculo().getId() > 0) {
+        if (ticket.getVeiculo() != null && ticket.getVeiculo().getId() != null && ticket.getVeiculo().getId() > 0) {
             Long veiculoId = ticket.getVeiculo().getId();
             log.debug("Carregando veiculoId={} para associar no ticket", veiculoId);
 
-            Veiculo veiculoCompleto = veiculoRepository.findById(ticket.getVeiculo().getId())
+            Veiculo veiculoCompleto = veiculoRepository.findById(veiculoId)
                     .orElseThrow(() -> {
                         log.warn("Falha ao criar ticket: Veículo {} não encontrado", veiculoId);
-                         return  new VeiculoNotFoundException(veiculoId);
+                        return new VeiculoNotFoundException(veiculoId);
                     });
 
             ticket.setVeiculo(veiculoCompleto);
         }
 
         Ticket salvo = repository.save(ticket);
-        log.info("Ticket criado: id={}", salvo.getId());
+        repository.flush();
+        log.info("Ticket criado e persistido: id={}", salvo.getId());
         return salvo;
-
     }
-    public Ticket update(Long id, Ticket novoTicket){
+
+    @Transactional
+    public Ticket update(Long id, Ticket novoTicket) {
         log.info("Atualizando ticket: id={}", id);
 
         Ticket ticketExistente = repository.findById(id)
@@ -68,42 +71,41 @@ public class TicketService {
         ticketExistente.setValorPago(novoTicket.getValorPago());
         ticketExistente.setDataSaida(LocalDateTime.now());
 
-        Ticket atualizado =  repository.save(ticketExistente);
-        log.info("Ticket atualizado: id={}", atualizado.getId());
+        Ticket atualizado = repository.save(ticketExistente);
+        repository.flush();
+        log.info("Ticket atualizado e persistido: id={}", atualizado.getId());
         return atualizado;
-        
     }
 
-    public void deletar(Long id){
-
+    @Transactional
+    public void deletar(Long id) {
         log.info("Deletando ticket: id={}", id);
 
-        if(!repository.existsById(id)){
+        if (!repository.existsById(id)) {
             log.warn("Ticket não encontrado para delete: id={}", id);
             throw new TicketNotFoundException(id);
         }
+
         repository.deleteById(id);
-        log.info("Ticket deletado: id={}", id);
+        repository.flush();
+        log.info("Ticket deletado e persistido: id={}", id);
     }
 
-    public Ticket checkout(Long id){
+    @Transactional
+    public Ticket checkout(Long id) {
         log.info("Checkout do ticket: id={}", id);
 
-        //buscar o ticket no banco
         Ticket ticket = repository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Ticket não encontrado para checkout: id={}", id);
                     return new TicketNotFoundException(id);
                 });
 
-        //definir a hora de saida
         ticket.setDataSaida(LocalDateTime.now());
 
-        //pega a dif entre a entarda e saida
         long minutos = java.time.Duration.between(ticket.getDataEntrada(), ticket.getDataSaida()).toMinutes();
 
         BigDecimal valor;
-
         if (minutos <= 30) {
             valor = BigDecimal.valueOf(10.0);
         } else if (minutos <= 60) {
@@ -117,8 +119,8 @@ public class TicketService {
         ticket.setValorPago(valor);
 
         Ticket finalizado = repository.save(ticket);
+        repository.flush();
         log.info("Checkout finalizado: id={} minutos={} valorPago={}", finalizado.getId(), minutos, valor);
         return finalizado;
     }
-
 }

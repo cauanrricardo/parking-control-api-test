@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${editando} ? 'Editar Ticket' : 'Novo Ticket'">Ticket</title>
+    <style>
+        :root{
+            --bg:#f6f7fb;
+            --card:#ffffff;
+            --text:#111827;
+            --muted:#6b7280;
+            --border:#e5e7eb;
+            --primary:#2563eb;
+            --primary-hover:#1d4ed8;
+            --radius:10px;
+            --shadow:0 8px 20px rgba(17,24,39,.06);
+            --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        *{ box-sizing: border-box; }
+        body{
+            margin:0;
+            font-family:var(--font);
+            background:var(--bg);
+            color:var(--text);
+        }
+
+        .container{
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        .card{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow:hidden;
+        }
+
+        .header{
+            padding: 14px 16px;
+            border-bottom:1px solid var(--border);
+        }
+
+        h1{
+            margin:0;
+            font-size: 18px;
+        }
+        .subtitle{
+            margin-top:4px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .content{
+            padding: 16px;
+        }
+
+        .alert{
+            padding: 10px 12px;
+            border-radius: 8px;
+            border:1px solid #fecaca;
+            background:#fef2f2;
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .field{
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            margin-bottom: 12px;
+        }
+
+        label{
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        input[type="number"]{
+            width:100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border:1px solid var(--border);
+            background:#fff;
+            color: var(--text);
+            outline:none;
+        }
+
+        input[type="number"]:focus{
+            border-color: rgba(37,99,235,.55);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+        }
+
+        .help{
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .actions{
+            display:flex;
+            gap:10px;
+            margin-top: 14px;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border:1px solid var(--border);
+            background:#fff;
+            color: var(--text);
+            text-decoration:none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor:pointer;
+            line-height: 1.1;
+        }
+        .btn:hover{ background:#f9fafb; }
+
+        .btn.primary{
+            border-color: transparent;
+            background: var(--primary);
+            color:#fff;
+        }
+        .btn.primary:hover{ background: var(--primary-hover); }
+
+        .btn.ghost{
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1 th:text="${editando} ? 'Editar Ticket' : 'Novo Ticket'">Novo Ticket</h1>
+            <div class="subtitle">Preencha os dados e salve</div>
+        </div>
+
+        <div class="content">
+            <div class="alert" th:if="${erro}" th:text="${erro}">Erro aqui</div>
+
+            <form th:object="${ticket}"
+                  th:action="${editando} ? @{/tickets/{id}(id=${ticket.id})} : @{/tickets}"
+                  method="post">
+
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="field">
+                    <label for="veiculoId">ID do Veículo</label>
+                    <input id="veiculoId"
+                           type="number"
+                           min="1"
+                           th:field="*{veiculo.id}"
+                           placeholder="Ex.: 1" />
+                    <div class="help">Informe o ID do veículo para associar ao ticket.</div>
+                </div>
+
+                <div class="field">
+                    <label for="valorPago">Valor pago</label>
+                    <input id="valorPago"
+                           type="number"
+                           step="0.01"
+                           min="0"
+                           th:field="*{valorPago}"
+                           placeholder="Ex.: 10.00" />
+                    <div class="help">Opcional no cadastro; pode ser preenchido no checkout/edição.</div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn primary" type="submit"
+                            th:text="${editando} ? 'Salvar alterações' : 'Cadastrar'">
+                        Cadastrar
+                    </button>
+                    <a class="btn ghost" th:href="@{/tickets}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
