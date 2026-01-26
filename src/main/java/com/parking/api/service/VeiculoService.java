@@ -37,12 +37,15 @@ public class VeiculoService {
             throw new IllegalArgumentException("Placa nao pode estar vazia");
         }
 
+// em `src/main/java/com/parking/api/service/VeiculoService.java`
         String placa = veiculo.getPlaca().trim().toUpperCase();
         veiculo.setPlaca(placa);
 
-        String placaPadrao = "^[A-Z]{3}\\d{4}$";
-        if (!placa.matches(placaPadrao)) {
-            throw new IllegalArgumentException("Placa deve seguir o padrao AAA0000");
+        String placaPadraoAntigo = "^[A-Z]{3}\\d{4}$";
+        String placaPadraoMercosul = "^[A-Z]{3}\\d[A-Z]\\d{2}$";
+
+        if (!placa.matches(placaPadraoAntigo) && !placa.matches(placaPadraoMercosul)) {
+            throw new IllegalArgumentException("Placa deve seguir o padrão AAA0000 ou AAA1A11");
         }
 
         if (repository.existsByPlaca(placa)) {
