@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Veículos</title>
+    <style>
+        :root{
+            --bg:#f6f7fb;
+            --card:#ffffff;
+            --text:#111827;
+            --muted:#6b7280;
+            --border:#e5e7eb;
+            --primary:#2563eb;
+            --primary-hover:#1d4ed8;
+            --danger:#dc2626;
+            --danger-hover:#b91c1c;
+            --radius:10px;
+            --shadow:0 8px 20px rgba(17,24,39,.06);
+            --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        *{ box-sizing: border-box; }
+        body{
+            margin:0;
+            font-family:var(--font);
+            background:var(--bg);
+            color:var(--text);
+        }
+
+        .container{
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        .page-header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+        }
+
+        h1{
+            margin:0;
+            font-size: 20px;
+        }
+
+        .card{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow:hidden;
+        }
+
+        .toolbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            padding: 12px 14px;
+            border-bottom:1px solid var(--border);
+        }
+
+        .muted{ color:var(--muted); font-size: 13px; }
+
+        .messages{
+            padding: 12px 14px 0;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+
+        .alert{
+            padding: 10px 12px;
+            border-radius: 8px;
+            border:1px solid var(--border);
+            background:#f9fafb;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .alert.ok{
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+        .alert.err{
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border:1px solid var(--border);
+            background:#fff;
+            color: var(--text);
+            text-decoration:none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor:pointer;
+            line-height: 1.1;
+        }
+        .btn:hover{ background:#f9fafb; }
+
+        .btn.primary{
+            border-color: transparent;
+            background: var(--primary);
+            color:#fff;
+        }
+        .btn.primary:hover{ background: var(--primary-hover); }
+
+        .btn.danger{
+            border-color: transparent;
+            background: var(--danger);
+            color:#fff;
+        }
+        .btn.danger:hover{ background: var(--danger-hover); }
+
+        table{
+            width:100%;
+            border-collapse: collapse;
+        }
+
+        thead th{
+            background:#f9fafb;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            text-align:left;
+            padding: 12px 14px;
+            border-bottom:1px solid var(--border);
+        }
+
+        tbody td{
+            padding: 12px 14px;
+            border-bottom:1px solid var(--border);
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        tbody tr:hover td{
+            background:#fafafa;
+        }
+
+        .col-id{ width:90px; }
+        .col-actions{ width: 240px; }
+
+        .actions{
+            display:flex;
+            gap:8px;
+            flex-wrap: wrap;
+        }
+
+        .empty{
+            padding: 14px;
+            color: var(--muted);
+        }
+
+        .count{
+            padding: 6px 10px;
+            border:1px solid var(--border);
+            border-radius: 999px;
+            background:#fff;
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header">
+        <h1>Veículos</h1>
+        <a class="btn primary" th:href="@{/veiculos/novo}">Novo veículo</a>
+    </div>
+
+    <div class="card">
+        <div class="messages">
+            <div class="alert ok" th:if="${msg}" th:text="${msg}"></div>
+            <div class="alert err" th:if="${erro}" th:text="${erro}"></div>
+        </div>
+
+        <div class="toolbar">
+            <div class="muted">Lista de veículos cadastrados</div>
+            <span class="count"
+                  th:text="${veiculos != null} ? ${#lists.size(veiculos)} + ' total' : '0 total'">0 total</span>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th class="col-id">ID</th>
+                <th>Placa</th>
+                <th>Modelo</th>
+                <th>Cor</th>
+                <th>Motorista (ID)</th>
+                <th class="col-actions">Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:if="${veiculos == null or #lists.isEmpty(veiculos)}">
+                <td class="empty" colspan="6">Nenhum veículo cadastrado.</td>
+            </tr>
+
+            <tr th:each="v : ${veiculos}">
+                <td th:text="${v.id}">1</td>
+                <td th:text="${v.placa}">AAA0000</td>
+                <td th:text="${v.modeloCarro}">Corolla</td>
+                <td th:text="${v.cor}">Prata</td>
+                <td th:text="${v.motorista != null ? v.motorista.id : '-'}">-</td>
+                <td>
+                    <div class="actions">
+                        <a class="btn" th:href="@{/veiculos/{id}/editar(id=${v.id})}">Editar</a>
+
+                        <form th:action="@{/veiculos/{id}/excluir(id=${v.id})}"
+                              method="post"
+                              style="display:inline;margin:0;">
+                            <button class="btn danger"
+                                    type="submit"
+                                    onclick="return confirm('Tem certeza que deseja excluir este veículo?');">
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

@@ -12,7 +12,7 @@ import java.util.List;
 public class Veiculo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true) //regras pro db, nao pode ir vazio e nem duplciado
     @NotBlank(message = "A placa é obrigatória")
