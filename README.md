@@ -172,7 +172,7 @@ O projeto possui uma **interface web** desenvolvida com **Thymeleaf**, que permi
 * **URL:** `http://localhost:8080/motoristas`
 * **Templates:** Localizados em `src/main/resources/templates/motoristas/`
 
-> 💡 **Nota:** As views Thymeleaf complementam a API REST, oferecendo uma interface visual para operações básicas.
+>  **Nota:** As views Thymeleaf complementam a API REST, oferecendo uma interface visual para operações básicas.
 
 ---
 
