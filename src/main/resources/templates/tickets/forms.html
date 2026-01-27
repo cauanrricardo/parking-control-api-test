@@ -81,7 +81,8 @@
             color: var(--muted);
         }
 
-        input[type="number"]{
+        input[type="number"],
+        input[type="datetime-local"]{
             width:100%;
             padding: 10px 12px;
             border-radius: 8px;
@@ -91,7 +92,8 @@
             outline:none;
         }
 
-        input[type="number"]:focus{
+        input[type="number"]:focus,
+        input[type="datetime-local"]:focus{
             border-color: rgba(37,99,235,.55);
             box-shadow: 0 0 0 3px rgba(37,99,235,.12);
         }
@@ -165,14 +167,31 @@
                 </div>
 
                 <div class="field">
+                    <label for="dataEntrada">Data de Entrada</label>
+                    <input id="dataEntrada"
+                           type="datetime-local"
+                           th:field="*{dataEntrada}" />
+                    <div class="help">Data e hora de entrada do veículo.</div>
+                </div>
+
+                <div class="field">
+                    <label for="dataSaida">Data de Saída</label>
+                    <input id="dataSaida"
+                           type="datetime-local"
+                           th:field="*{dataSaida}" />
+                    <div class="help">Data e hora de saída do veículo (calculará o valor automaticamente).</div>
+                </div>
+
+                <div class="field">
                     <label for="valorPago">Valor pago</label>
                     <input id="valorPago"
                            type="number"
                            step="0.01"
                            min="0"
                            th:field="*{valorPago}"
-                           placeholder="Ex.: 10.00" />
-                    <div class="help">Opcional no cadastro; pode ser preenchido no checkout/edição.</div>
+                           placeholder="Ex.: 10.00"
+                           readonly />
+                    <div class="help">Valor calculado automaticamente ao informar as datas.</div>
                 </div>
 
                 <div class="actions">
@@ -186,5 +205,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataEntradaInput = document.getElementById('dataEntrada');
+        const dataSaidaInput = document.getElementById('dataSaida');
+        const valorPagoInput = document.getElementById('valorPago');
+
+        function calcularValor() {
+            const dataEntrada = dataEntradaInput.value;
+            const dataSaida = dataSaidaInput.value;
+
+            if (dataEntrada && dataSaida) {
+                fetch(`/api/ticket/calcular-valor?dataEntrada=${dataEntrada}&dataSaida=${dataSaida}`)
+                    .then(response => response.json())
+                    .then(valor => {
+                        valorPagoInput.value = valor.toFixed(2);
+                    })
+                    .catch(error => console.error('Erro ao calcular valor:', error));
+            }
+        }
+
+        dataSaidaInput.addEventListener('change', calcularValor);
+        dataEntradaInput.addEventListener('change', calcularValor);
+    });
+</script>
+
 </body>
 </html>

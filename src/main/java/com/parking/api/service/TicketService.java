@@ -123,4 +123,30 @@ public class TicketService {
         log.info("Checkout finalizado: id={} minutos={} valorPago={}", finalizado.getId(), minutos, valor);
         return finalizado;
     }
+
+    @Transactional
+    public BigDecimal calcularValor(LocalDateTime dataEntrada, LocalDateTime dataSaida) {
+        log.debug("Calculando valor para período: {} até {}", dataEntrada, dataSaida);
+
+        if (dataEntrada == null || dataSaida == null) {
+            return BigDecimal.ZERO;
+        }
+
+        long minutos = java.time.Duration.between(dataEntrada, dataSaida).toMinutes();
+
+        BigDecimal valor;
+        if (minutos <= 30) {
+            valor = BigDecimal.valueOf(10.0);
+        } else if (minutos <= 60) {
+            valor = BigDecimal.valueOf(15.0);
+        } else if (minutos <= 120) {
+            valor = BigDecimal.valueOf(25.0);
+        } else {
+            valor = BigDecimal.valueOf(30.0);
+        }
+
+        log.debug("Valor calculado: {} para {} minutos", valor, minutos);
+        return valor;
+    }
+
 }

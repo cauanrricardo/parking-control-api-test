@@ -27,7 +27,6 @@ public class VeiculoController {
         Veiculo criado = service.salvar(veiculo);
         URI location = URI.create("/api/veiculo" + criado.getId());
         return ResponseEntity.created(location).body(veiculo);
-
     }
 
     @PutMapping("/{id}")
@@ -41,5 +40,6 @@ public class VeiculoController {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }

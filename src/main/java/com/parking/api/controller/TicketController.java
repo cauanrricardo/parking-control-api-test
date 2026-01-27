@@ -3,11 +3,12 @@ package com.parking.api.controller;
 import com.parking.api.model.Ticket;
 import com.parking.api.service.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -40,5 +41,16 @@ public class TicketController {
         service.deletar(id);
         return  ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/calcular-valor")
+    public ResponseEntity<BigDecimal> calcularValor(@RequestParam String dataEntrada, @RequestParam String dataSaida) {
+
+        LocalDateTime entrada = LocalDateTime.parse(dataEntrada);
+        LocalDateTime saida = LocalDateTime.parse(dataSaida);
+
+        BigDecimal valor = service.calcularValor(entrada, saida);
+        return ResponseEntity.ok(valor);
+    }
+
 
 }
