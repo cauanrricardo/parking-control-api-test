@@ -11,8 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class MotoristaServiceTest {
             motorista.setNomeCompleto("Cristian Ricardo");
             motorista.setRg("00.123-456");
 
-            // Mock: RG não existe no banco
+            // Mocok: RG não existe no banco
             when(repository.existsByRg(motorista.getRg())).thenReturn(false);
 
             // Mock: retorna o motorista salvo com ID
