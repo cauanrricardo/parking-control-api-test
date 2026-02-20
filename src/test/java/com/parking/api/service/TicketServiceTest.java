@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -352,7 +353,7 @@ class Deletar{
             Ticket ticket2 = new Ticket();
             List<Ticket> listaSimulada = List.of(ticket1, ticket2);
 
-            when(ticketRepository.findAll())
+            when(ticketRepository.findAll(any(Sort.class)))
                     .thenReturn(listaSimulada);
 
             List<Ticket> resultado = ticketService.listarTickets();
@@ -360,7 +361,7 @@ class Deletar{
             assertNotNull(resultado);
             assertEquals(2, resultado.size());
             //verifica se o service foi no banco buscar
-            verify(ticketRepository, times(1)).findAll();
+            verify(ticketRepository, times(1)).findAll(any(Sort.class));
 
 
         }
@@ -369,14 +370,14 @@ class Deletar{
         void deveRetornarListaVaziaQuandoNaoHaTickets(){
             List<Ticket> listaSimulada = List.of();
 
-            when(ticketRepository.findAll())
+            when(ticketRepository.findAll(any(Sort.class)))
                     .thenReturn(listaSimulada);
 
             List<Ticket> resultado = ticketService.listarTickets();
 
             assertNotNull(resultado);
             assertTrue(resultado.isEmpty(), "A lista deveria estar vazia");
-            verify(ticketRepository, times(1)).findAll();
+            verify(ticketRepository, times(1)).findAll(any(Sort.class));
 
         }
 
