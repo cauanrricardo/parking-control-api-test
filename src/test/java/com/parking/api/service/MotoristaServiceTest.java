@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 
 import java.util.List;
@@ -188,7 +189,7 @@ public class MotoristaServiceTest {
 
             List<Motorista> listaMotoristas = List.of(motorista1, motorista2);
 
-            when(repository.findAll())
+            when(repository.findAll(any(Sort.class)))
                     .thenReturn(listaMotoristas);
 
             List<Motorista> resultado = service.listarMotorista();
@@ -198,7 +199,7 @@ public class MotoristaServiceTest {
             assertEquals("Cauan Ricardo", resultado.get(0).getNomeCompleto());
             assertEquals("Ricardo Silva", resultado.get(1).getNomeCompleto());
 
-            verify(repository, times(1)).findAll();
+            verify(repository, times(1)).findAll(any(Sort.class));
         }
 
         @Test
@@ -206,7 +207,7 @@ public class MotoristaServiceTest {
         void deveRetornarListaVaziaQuandoNaoHaMotoristas(){
          List<Motorista> listaVazia = List.of();
 
-        when(repository.findAll())
+        when(repository.findAll(any(Sort.class)))
             .thenReturn(listaVazia);
 
         List<Motorista> resultado = service.listarMotorista();
@@ -215,7 +216,6 @@ public class MotoristaServiceTest {
 
         verify(repository, never()).save(any(Motorista.class));
         }
-
 
     }
 
