@@ -118,7 +118,7 @@ public class VeiculoServiceTest {
         }
 
         @Test
-        void naoDeveAceitarPlacaComLetrasMinusculas(){
+        void deveAceitarPlacaMinusculaConverterParaMaiuscula(){
             //given
             Motorista motorista = new Motorista();
             motorista.setId(1L);
