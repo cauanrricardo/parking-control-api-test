@@ -51,7 +51,6 @@ O foco principal deste repositório foi a aplicação de **Boas Práticas de Eng
 * **Interface Web:** Views HTML renderizadas pelo Thymeleaf para gerenciamento de motoristas
 
 > 💡 **Sobre o Thymeleaf**: Este projeto utiliza **Thymeleaf** como motor de templates para renderizar páginas HTML dinâmicas no lado do servidor. As views estão localizadas em `src/main/resources/templates/` e fornecem uma interface web simples para visualização e cadastro de motoristas.
-
 ---
 
 ## ⚙️ Destaques Técnicos & Refatoração
