@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 
 import java.util.List;
@@ -112,8 +113,7 @@ public class VeiculoServiceTest {
                 service.salvar(veiculo);
             });
 
-            assertEquals("Placa deve seguir o padrão AAA0000", exception.getMessage());
-
+            assertEquals("Placa inválida. Aceitos: padrão antigo (AAA1234) ou Mercosul (AAA1A11)", exception.getMessage());
 
         }
 
@@ -128,11 +128,12 @@ public class VeiculoServiceTest {
             veiculo.setMotorista(motorista);
 
             //when / then
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                service.salvar(veiculo);
-            });
+            when(motoristaRepository.findById(1L)).thenReturn(Optional.of(motorista));
+            when(repository.save(any(Veiculo.class))).thenAnswer(i -> i.getArgument(0));
 
-            assertEquals("Placa deve seguir o padrão AAA0000", exception.getMessage());
+            Veiculo resultado = service.salvar(veiculo);
+
+            assertEquals("ABC1234", resultado.getPlaca());
 
         }
 
@@ -172,32 +173,29 @@ public class VeiculoServiceTest {
 
             List<Veiculo> listaVeiculos = List.of(v1, v2);
 
-            when(repository.findAll())
+            when(repository.findAll(any(Sort.class)))
                     .thenReturn(listaVeiculos);
 
             List<Veiculo> resultado = service.listarVeiculos(); // o resultado vai receber a listaveiculos retornada do listarVeiuclos();
 
             assertNotNull(resultado);
             assertEquals(2, resultado.size());
-            verify(repository, times(1)).findAll();
+            verify(repository, times(1)).findAll(any(Sort.class));
         }
 
         @Test
         void deveRetornarListaVaziaQuandoNaoHaVeiculos(){
             List<Veiculo> listaVeiculos = List.of();
 
-            when(repository.findAll())
+            when(repository.findAll(any(Sort.class)))
                     .thenReturn(listaVeiculos);
 
             List<Veiculo> resultado = service.listarVeiculos();
 
             assertNotNull(resultado);
             assertTrue(resultado.isEmpty(), " A lista deve estar vazia");
-            assertEquals(0, resultado.size());
-
 
         }
-
 
     }
 
