@@ -59,7 +59,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'temurin'22222222222222222222222222222222222222222222222222222222222222222
           cache: maven
 
       - name: Build  aplication
