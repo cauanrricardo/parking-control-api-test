@@ -1,13 +1,6 @@
 # 🚗 Parking Management API 
 
-[![CI](https://github.com/cauanrricardo/parking-control-api-test/actions/workflows/ci.yml/badge.svg)](https://github.com/cauanrricardo/parking-control-api-test/actions/workflows/ci.yml)
-![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.9-green?logo=springboot)
-![Maven](https://img.shields.io/badge/Maven-3.9+-blue?logo=apachemaven)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql)
-![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1+-green?logo=thymeleaf)
-![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85ea2d?logo=swagger)
-![JUnit 5](https://img.shields.io/badge/Testing-JUnit5_&_Mockito-red?logo=junit5)
+[![CI](https://github.com/cauanrricardo/parking-control-api-test/actions/workflows/maven.yml/badge.svg)](https://github.com/cauanrricardo/parking-control-api-test/actions/workflows/ci.yml)
 
 > API RESTful para gestão de estacionamentos desenvolvida como projeto pessoal, com foco total na aprendizagem de **Testes Unitários (Mockito)** e Arquitetura Spring Boot.
 
