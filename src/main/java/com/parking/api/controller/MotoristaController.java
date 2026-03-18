@@ -23,7 +23,7 @@ public class MotoristaController {
     }
 
     @PostMapping
-    public ResponseEntity<Motorista> criar( @RequestBody Motorista motorista){
+    public ResponseEntity<Motorista> criar( @Valid @RequestBody Motorista motorista){
         Motorista motoristaCriado = service.salvar(motorista);
         URI location = URI.create("/api/motorista/" + motoristaCriado.getId());
         return  ResponseEntity.created(location).body(motoristaCriado);
