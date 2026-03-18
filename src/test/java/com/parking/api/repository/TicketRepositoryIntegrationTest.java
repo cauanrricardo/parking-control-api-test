@@ -31,8 +31,8 @@ public class TicketRepositoryIntegrationTest {
 
     }
 
-    @Test
-    void deveRetornarRegistroExistente(){
+    @Test @DisplayName("Deve buscar ticket por id existente")
+    void deveBuscarPorIdExistente() {
         Ticket ticket = new Ticket();
         ticket.setDataEntrada(LocalDateTime.now().minusMinutes(50));
 
@@ -44,7 +44,7 @@ public class TicketRepositoryIntegrationTest {
         assertEquals(ticketSalvo.getId(), resultado.get().getId());
     }
 
-    @Test
+    @Test @DisplayName("Deve retornar vazio ao buscar id inexistente")
     void deveRetornarRegistroInexistente(){
         Optional<Ticket> resultadoInexistente = repository.findById(99L);
 
@@ -52,7 +52,7 @@ public class TicketRepositoryIntegrationTest {
 
     }
 
-    @Test
+    @Test @DisplayName("Deve listar todos os tickets")
     void deveRetornarListaCorretaDetickets(){
     Ticket t1 = new Ticket();
     Ticket t2 = new Ticket();
@@ -70,22 +70,38 @@ public class TicketRepositoryIntegrationTest {
     }
 
     @Test
-    void deveRetornarTrueSeExisteId(){
-        Ticket ticket = new Ticket();
-        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(30));
-
-        Ticket salvo = repository.save(ticket);
-
-        Optional<Ticket> idExistente = repository.findById(salvo.getId());
-
-        assertTrue(idExistente.isPresent());
-        assertEquals(salvo.getId(), idExistente.get().getId());
-    }
-
-    @Test @DisplayName("Deve retornar vazio ao buscar id inexistente")
+    @DisplayName("Deve retornar vazio ao buscar id inexistente")
     void deveRetornarVazioQuandoIdNaoExiste() {
         Optional<Ticket> encontrado = repository.findById(99L);
         assertTrue(encontrado.isEmpty());
     }
+
+
+    @Test
+    @DisplayName("Deve validar existsById")
+    void deveValidarExistsById() {
+        Ticket ticket = new Ticket();
+        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(25));
+        Ticket salvo = repository.save(ticket);
+
+        assertTrue(repository.existsById(salvo.getId()));
+        assertFalse(repository.existsById(123456L));
+    }
+
+    @Test
+    @DisplayName("Deve remover ticket por id")
+    void deveRemoverPorId() {
+        Ticket ticket = new Ticket();
+        ticket.setDataEntrada(LocalDateTime.now().minusMinutes(35));
+        Ticket salvo = repository.save(ticket);
+
+        repository.deleteById(salvo.getId());
+
+        assertFalse(repository.existsById(salvo.getId()));
+    }
+
+
+
+
 
 }
