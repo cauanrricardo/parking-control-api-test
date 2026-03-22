@@ -20,7 +20,7 @@ API REST para gerenciamento de estacionamento, desenvolvida com foco em **boas p
 - JUnit 5 & Mockito  
 - Maven  
 - Swagger (OpenAPI)  
-- Thymeleaf  
+- Thymeleaf 
 
 ## 🏗 Arquitetura
 
