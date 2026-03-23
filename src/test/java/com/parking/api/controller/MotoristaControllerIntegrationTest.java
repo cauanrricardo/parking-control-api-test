@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,8 +37,8 @@ public class MotoristaControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve cadastrar motorista com sucesso")
-    void deveCadastrarMotoristaComSucesso() throws Exception{
+    @DisplayName(" POST -> Deve cadastrar motorista com sucesso")
+    void deveCadastrarMotoristaComSucesso() throws Exception{ //throws exception nesse caso eh usado pra se alguma coisa aconetcer, pode deixar subir
         Motorista motorista = new Motorista();
         motorista.setNomeCompleto("Cauan Ricardo");
         motorista.setRg("11.111-897");
@@ -51,5 +52,25 @@ public class MotoristaControllerIntegrationTest {
                 .andExpect(jsonPath("$.rg").value("11.111-897"));
     }
 
+    @Test
+    void deveListarTodosOsMotoristas() throws Exception{
+        Motorista motorista = new Motorista();
+        motorista.setNomeCompleto("Cauan Ricardo");
+        motorista.setRg("11.111-897");
+
+        Motorista motorista2 = new Motorista();
+        motorista2.setNomeCompleto("Ricardo Ribeiro");
+        motorista2.setRg("00.000-897");
+
+        repository.save(motorista);
+        repository.save(motorista2);
+
+        mockMvc.perform(get("/api/motorista"))
+                .andExpect(status().isOk()) //status 200
+                .andExpect(jsonPath("$").isArray())//validar se voltou um array
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].nomeCompleto").value("Cauan Ricardo"))
+                .andExpect(jsonPath("$[1].nomeCompleto").value("Ricardo Ribeiro"));
+    }
 
 }
