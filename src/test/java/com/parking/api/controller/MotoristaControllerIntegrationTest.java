@@ -13,8 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest // contexto completo da aplicação Spring Boot para o teste
@@ -92,6 +91,48 @@ public class MotoristaControllerIntegrationTest {
         mockMvc.perform(get("/api/motorista/{id}", 99L))
                 .andExpect(status().isNotFound());
     }
+
+
+
+    @Test
+    @DisplayName("Deve atualizar o motorista")
+    void deveAtualizarMotorista() throws  Exception{
+           /*
+    * Given → salva no banco
+      When → faz PUT com novos dados
+      Then → valida que foi atualizado*/
+
+        Motorista motorista = new Motorista();
+        motorista.setNomeCompleto("Cauan Ricardo");
+        motorista.setRg("11.111-897");
+
+        Motorista salvo = repository.save(motorista);
+
+        Motorista motoristaAtualizado = new Motorista();
+        motoristaAtualizado.setNomeCompleto("Ricardo Ribeiro");
+        motoristaAtualizado.setRg("11.111-800");
+
+        mockMvc.perform(put("/api/motorista/{id}", salvo.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(motoristaAtualizado)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nomeCompleto").value(motoristaAtualizado.getNomeCompleto()))
+                .andExpect(jsonPath("$.rg").value(motoristaAtualizado.getRg()));
+    }
+
+    @Test
+    @DisplayName("DELETE -> Deletando um motorista")
+    void deletarMotorista() throws Exception{
+        Motorista motorista = new Motorista();
+        motorista.setNomeCompleto("Cauan Ricardo");
+        motorista.setRg("11.111-897");
+
+        Motorista salvo = repository.save(motorista);
+
+        mockMvc.perform(delete("/api/motorista/{id}", salvo.getId()))
+                .andExpect(status().isNoContent());
+    }
+
 
 
 }
