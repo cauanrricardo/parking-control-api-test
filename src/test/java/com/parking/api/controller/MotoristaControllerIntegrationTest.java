@@ -73,4 +73,25 @@ public class MotoristaControllerIntegrationTest {
                 .andExpect(jsonPath("$[1].nomeCompleto").value("Ricardo Ribeiro"));
     }
 
+    @Test
+    void deveListarMotoristapeloId() throws Exception{
+        Motorista motorista = new Motorista();
+        motorista.setNomeCompleto("Cauan Ricardo");
+        motorista.setRg("11.111-897");
+
+        Motorista salvo = repository.save(motorista);
+
+        mockMvc.perform(get("/api/motorista/{id}", salvo.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(salvo.getId()))
+                .andExpect(jsonPath("$.nomeCompleto").value("Cauan Ricardo"));
+    }
+
+    @Test
+    void naoDeveListarMotoristaPeloIdinexistente() throws Exception {
+        mockMvc.perform(get("/api/motorista/{id}", 99L))
+                .andExpect(status().isNotFound());
+    }
+
+
 }

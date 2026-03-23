@@ -22,6 +22,11 @@ public class MotoristaController {
         return ResponseEntity.ok(service.listarMotorista());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Motorista> obterPorId(@PathVariable Long id){
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
     @PostMapping
     public ResponseEntity<Motorista> criar( @Valid @RequestBody Motorista motorista){
         Motorista motoristaCriado = service.salvar(motorista);
