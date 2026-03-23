@@ -73,6 +73,7 @@ public class MotoristaControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("GET -> deve listar por id")
     void deveListarMotoristapeloId() throws Exception{
         Motorista motorista = new Motorista();
         motorista.setNomeCompleto("Cauan Ricardo");
@@ -95,7 +96,7 @@ public class MotoristaControllerIntegrationTest {
 
 
     @Test
-    @DisplayName("Deve atualizar o motorista")
+    @DisplayName("PUT -> Deve atualizar o motorista")
     void deveAtualizarMotorista() throws  Exception{
            /*
     * Given → salva no banco
