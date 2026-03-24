@@ -52,6 +52,20 @@ public class MotoristaControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("POST -> Não deve cadastrar motorista sem nome")
+    void naoDeveCadastrarMotristaSemNome() throws Exception {
+        Motorista motorista = new Motorista();
+        motorista.setRg("11.111-897");
+
+        mockMvc.perform(post("/api/motorista")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(motorista))) //passa o json no body
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @DisplayName("GET -> deve listar todos motoristas")
     void deveListarTodosOsMotoristas() throws Exception{
         Motorista motorista = new Motorista();
         motorista.setNomeCompleto("Cauan Ricardo");
@@ -122,6 +136,19 @@ public class MotoristaControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("PUT -> Não deve atualizar motorista inexistente")
+    void naoDeveAtualizarMotoristaInexistente() throws Exception {
+        Motorista motorista = new Motorista();
+        motorista.setNomeCompleto("Cauan Ricardo");
+        motorista.setRg("11.111-897");
+
+        mockMvc.perform(put("/api/motorista/{id}", 99L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(motorista)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("DELETE -> Deletando um motorista")
     void deletarMotorista() throws Exception{
         Motorista motorista = new Motorista();
@@ -132,6 +159,13 @@ public class MotoristaControllerIntegrationTest {
 
         mockMvc.perform(delete("/api/motorista/{id}", salvo.getId()))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE -> Não deve deletar motorista inexistente")
+    void naoDeveDeletarMotoristaInexistente() throws Exception {
+        mockMvc.perform(delete("/api/motorista/{id}", 99L))
+                .andExpect(status().isNotFound());
     }
 
 
