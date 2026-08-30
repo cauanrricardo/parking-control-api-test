@@ -2,6 +2,7 @@
   🇧🇷 <a href="#pt">Português</a> •
   🇺🇸 <a href="#en">English</a>
 </p>
+
 ---
 
 # 🚗 Controle de Estacionamento API <a name="pt"></a>
